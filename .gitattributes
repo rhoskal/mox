@@ -1,0 +1,6 @@
+# Nix stuff
+(^|/)nix/ linguist-vendored
+*.nix     linguist-vendored
+
+# Misc
+Makefile  linguist-vendored

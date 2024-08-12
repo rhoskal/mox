@@ -1,0 +1,20 @@
+# builds
+dist-newstyle
+.stack-work
+
+# nix
+.nix*
+
+# editors
+.nova
+.vscode
+
+# env
+.envrc
+
+# misc
+.DS_Store
+*~
+
+# logs
+.hspec-failures
