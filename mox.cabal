@@ -79,7 +79,7 @@ library
 
     -- Modules exported by the library.
     exposed-modules:
-        MyLib
+        Lexer
 
     -- Modules included in this library but not exported.
     -- other-modules:
@@ -89,7 +89,12 @@ library
 
     -- Other library packages from which modules are imported.
     build-depends:
-        base ^>=4.19.1.0
+        base ^>=4.19.1.0,
+        array
+
+    build-tool-depends:
+        alex:alex >= 3.5,
+        happy:happy >= 1.20
 
     -- Directories containing source files.
     hs-source-dirs:   src
