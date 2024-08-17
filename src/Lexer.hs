@@ -23736,7 +23736,7 @@ lexError :: String -> Alex AlexInput
 lexError s = do
   (p, _, _, input) <- alexGetInput
   alexError (showPosn p ++ ": " ++ s ++
-    (if (not (T.null input))
+    (if not (T.null input)
       then " before " ++ show (T.head input)
       else " at end of file"))
 
