@@ -15,3 +15,9 @@ A new language that combines Elm, Elixir and Ocaml. Features include:
 - Native compilation using LLVM/MLIR
 - FFI support with [x language]
 - Arbitrary precision integers (default)
+
+## Setup
+
+```sh
+cabal install alex ghcid
+```

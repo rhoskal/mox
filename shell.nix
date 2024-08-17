@@ -1,28 +1,32 @@
+{ nixpkgs ? import <nixpkgs> { }, compiler ? "default", doBenchmark ? false }:
+
 let
-  sources = import ./nix/sources.nix { };
-  pkgs = import sources.nixpkgs { };
 
-  haskellDeps = ps: with ps; [ base hspec ];
+  inherit (nixpkgs) pkgs;
 
-  ghc = pkgs.haskell.compiler.ghc98 haskellDeps;
+  f = { mkDerivation, alex, array, base, hspec, lib, QuickCheck, text }:
+    mkDerivation {
+      pname = "mox";
+      version = "0.1.0";
+      src = ./.;
+      isLibrary = true;
+      isExecutable = true;
+      libraryHaskellDepends = [ array base text ];
+      libraryToolDepends = [ alex ];
+      executableHaskellDepends = [ base ];
+      testHaskellDepends = [ base hspec QuickCheck ];
+      homepage = "https://github.com/rhoskal/mox";
+      license = lib.licenses.bsd3;
+      mainProgram = "mox";
+    };
 
-  inputs = [
-    pkgs.gcc
-    pkgs.ghcid
-    pkgs.haskellPackages.hlint
-    pkgs.llvm
-    pkgs.nixfmt
-    pkgs.ormolu
-  ];
+  haskellPackages = if compiler == "default" then
+    pkgs.haskellPackages
+  else
+    pkgs.haskell.packages.${compiler};
 
-  hooks = ''
-    mkdir -p .nix-cabal
-    export CABAL_DIR=$PWD/.nix-cabal
-    export PATH=$PWD/.nix-cabal/bin:$PATH
-  '';
-in pkgs.stdenv.mkDerivation {
-  name = "app";
-  src = ./.;
-  buildInputs = inputs;
-  shellHook = hooks;
-}
+  variant = if doBenchmark then pkgs.haskell.lib.doBenchmark else pkgs.lib.id;
+
+  drv = variant (haskellPackages.callPackage f { });
+
+in if pkgs.lib.inNixShell then drv.env else drv

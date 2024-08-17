@@ -34,7 +34,7 @@ targets:
 # -------------------
 
 .PHONY: build
-build: ## Run GHC to produce executable
+build: alex ## Run GHC to produce executable
 	cabal build
 
 .PHONY: build-watch
@@ -44,6 +44,10 @@ build-watch: ## Watch files for changes and re-build
 .PHONY: clean
 clean: ## Remove artificats
 	cabal clean
+
+.PHONY: alex
+alex:
+	alex src/Lexer.x
 
 # Development targets
 # -------------------
@@ -67,3 +71,12 @@ repl: ## Run repl
 .PHONY: test
 test: ## Test code
 	cabal test
+
+.PHONY: cabal-to-nix
+cabal-to-nix: ## Update nix shell configuration
+	cabal2nix --shell ./. >shell.nix
+	nixfmt shell.nix
+
+.PHONY: shell
+shell:
+	nix-shell --argstr compiler ghc98

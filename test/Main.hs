@@ -1,4 +1,6 @@
-module Main (main) where
+import LexerSpec (lexerSpec)
+import Test.Hspec
 
 main :: IO ()
-main = putStrLn "Test suite not yet implemented."
+main = hspec $ parallel $ do
+  describe "Lexer" lexerSpec

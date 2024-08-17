@@ -80,6 +80,7 @@ library
     -- Modules exported by the library.
     exposed-modules:
         Lexer
+        SrcLoc
 
     -- Modules included in this library but not exported.
     -- other-modules:
@@ -90,11 +91,11 @@ library
     -- Other library packages from which modules are imported.
     build-depends:
         base ^>=4.19.1.0,
-        array
+        array,
+        text
 
     build-tool-depends:
-        alex:alex >= 3.5,
-        happy:happy >= 1.20
+        alex:alex >= 3.5
 
     -- Directories containing source files.
     hs-source-dirs:   src
@@ -138,7 +139,8 @@ test-suite mox-test
     default-language: GHC2021
 
     -- Modules included in this executable, other than Main.
-    -- other-modules:
+    other-modules:
+        LexerSpec
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
@@ -155,4 +157,6 @@ test-suite mox-test
     -- Test dependencies.
     build-depends:
         base ^>=4.19.1.0,
-        mox
+        mox,
+        hspec,
+        QuickCheck
