@@ -161,4 +161,5 @@ test-suite mox-test
         base ^>=4.19.1.0,
         mox,
         hspec,
-        QuickCheck
+        QuickCheck,
+        text
