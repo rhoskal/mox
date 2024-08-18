@@ -81,6 +81,7 @@ library
     exposed-modules:
         Lexer
         SrcLoc
+        Token
 
     -- Modules included in this library but not exported.
     -- other-modules:
@@ -92,6 +93,7 @@ library
     build-depends:
         base ^>=4.19.1.0,
         array,
+        containers,
         text
 
     build-tool-depends:
