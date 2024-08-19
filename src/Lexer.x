@@ -17,9 +17,9 @@ import Token
 -- Character sets
 -----------------------------------------------------------
 $digit         = [0-9]
-$hexdigit      = [0-9 A-F a-f]
-$octdigit      = [0-7]
-$bindigit      = [0-1]
+$hex_digit     = [0-9 A-F a-f]
+$oct_digit     = [0-7]
+$bin_digit     = [0-1]
 $lower         = [a-z]
 $upper         = [A-Z]
 $letter        = [a-z A-Z]
@@ -30,129 +30,107 @@ $linefeed      = \n
 $finalid       = \'
 $graphic       = [\x21-\x7E]
 $extended      = [\x80-\xBF]
-$charesc       = [nrt\\\'\"]
-$special       = [\(\)\[\]\{\}\;\,\?]
-$symbol        = [\@\&\*\+\\\^\~\=\.\:\-\|\<\>]
+$charesc       = [n r t \\ \' \"]
+$special       = [\( \) \[ \] \{ \} \; \, \?]
+$symbol        = [\@ \& \* \+ \\ \^ \~ \= \. \: \- \| \< \>]
 
-$whitespace    = [ \t\n\r\f\v]
+$whitespace    = [\t \n \r \f \v]
 
 -----------------------------------------------------------
 -- Regex patterns
 -----------------------------------------------------------
-@sign          = [\-]?
-@digitsep      = \_ $digit+
-@hexdigitsep   = \_ $hexdigit+
-@octdigitsep   = \_ $octdigit+
-@bindigitsep   = \_ $bindigit+
-@digits        = $digit+ @digitsep*
-@hexdigits     = $hexdigit+ @hexdigitsep*
-@octdigits     = $octdigit+ @octdigitsep*
-@bindigits     = $bindigit+ @bindigitsep*
-@hexadecimal   = "0x" @hexdigits
-@octal         = "0o" @octdigits
-@binary        = "0b" @bindigits
-@decimal       = 0 | [1-9] (\_? @digits)?
-@integer       = @sign (@decimal | @hexadecimal | @octal | @binary)
+@sign           = [\-]?
+@digits_sep     = \_ $digit+
+@hex_digits_sep = \_ $hex_digit+
+@oct_digits_sep = \_ $oct_digit+
+@bin_digits_sep = \_ $bin_digit+
+@digits         = $digit+ @digits_sep*
+@hex_digits     = $hex_digit+ @hex_digits_sep*
+@oct_digits     = $oct_digit+ @oct_digits_sep*
+@bin_digits     = $bin_digit+ @bin_digits_sep*
+@hexadecimal    = "0x" @hex_digits
+@octal          = "0o" @oct_digits
+@binary         = "0b" @bin_digits
+@decimal        = 0 | [1-9] (\_? @digits)?
+@integer        = @sign (@decimal | @hexadecimal | @octal | @binary)
 
-@exponent      = [eE] [\-\+] @decimal
-@float         = @sign @decimal \. @decimal @exponent?
-               | @sign @decimal @exponent
+@exponent       = [eE] [\-\+] @decimal
+@float          = @sign @decimal \. @decimal @exponent?
+                | @sign @decimal @exponent
 
-@idchar        = $letter | $digit | \_
-@idfinal       = \'
-@idtail        = @idchar* @idfinal*
-@lowerid       = $lower @idtail*
-@upperid       = $upper @idtail*
-@wildcard      = \_
+@id_char        = $letter | $digit | \_
+@id_final       = \'
+@id_tail        = @id_char* @id_final*
+@lower_id       = $lower @id_tail*
+@upper_id       = $upper @id_tail*
+@wildcard       = \_
 
-@constrid      = @upperid
-@varid         = @lowerid
-@qid           = (@upperid \.)
-@anyid         = @varid | @constrid
+@constr_id      = @upper_id
+@var_id         = @lower_id
+@q_id           = (@upper_id \.)
+@any_id         = @var_id | @constr_id
 
-@char          = $letter
-@string        = $letter+
+@char           = $letter
+@string         = $letter+
 
 -----------------------------------------------------------
 -- Tokenizer
 -----------------------------------------------------------
 tokens :-
   <0> $white+           { skip }
-  <0> "##".*            { skip } -- DocComment
-  <0> "#".*             { skip } -- LineComment
-
-  -- Specials
-  <0> $special          { string $ TokSpecial }
-
-  -- Reserved Operators
-  <0> ".."              { mkToken TokRange }
-  <0> "<>"              { mkToken TokAppend }
-  <0> "="               { mkToken TokAssign }
-  <0> "@"               { mkToken TokAt }
-  <0> "::"              { mkToken TokCons }
-  <0> ":"               { mkToken TokColon }
-  <0> "|"               { mkToken TokVerticalPipe }
-  <0> "->"              { mkToken TokRightArrow }
-  <0> "=>"              { mkToken TokFatArrow }
-  <0> "."               { mkToken TokDot }
-  <0> "&&"              { mkToken TokAnd }
-  <0> "||"              { mkToken TokOr }
-  <0> "^"               { mkToken TokXor }
-  <0> ".&."             { mkToken TokBitwiseAnd }
-  <0> ".|."             { mkToken TokBitwiseOr }
-  <0> ".^."             { mkToken TokBitwiseXor }
-  <0> ".~."             { mkToken TokBitwiseNot }
-  <0> "=="              { mkToken TokEquality }
-  <0> "/="              { mkToken TokNotEquals }
-  <0> "<"               { mkToken TokLessThan }
-  <0> "<="              { mkToken TokLessThanEquals }
-  <0> ">"               { mkToken TokGreaterThan }
-  <0> ">="              { mkToken TokGreaterThanEquals }
-  <0> "**"              { mkToken TokExponent }
-  <0> "+."              { mkToken TokFloatAdd }
-  <0> "-."              { mkToken TokFloatSub }
-  <0> "*."              { mkToken TokFloatMul }
-  <0> "/."              { mkToken TokFloatDiv }
-  <0> "+"               { mkToken TokIntAdd }
-  <0> "-"               { mkToken TokIntSub }
-  <0> "*"               { mkToken TokIntMul }
-  <0> "/"               { mkToken TokIntDiv }
+  <0> "##".*            { docComment }
+  <0> "#".*             { lineComment }
 
   -- Reserved Keywords
-  <0> "alias"           { mkToken TokAlias }
-  <0> "as"              { mkToken TokAs }
-  <0> "def"             { mkToken TokDef }
-  <0> "defp"            { mkToken TokDefPrivate }
-  <0> "do"              { mkToken TokDo }
-  <0> "else"            { mkToken TokElse }
-  <0> "end"             { mkToken TokEnd }
-  <0> "fn"              { mkToken TokLambda }
-  <0> "hiding"          { mkToken TokHiding }
-  <0> "if"              { mkToken TokIf }
-  <0> "in"              { mkToken TokIn }
-  <0> "include"         { mkToken TokInclude }
-  <0> "let"             { mkToken TokLet }
-  <0> "match"           { mkToken TokMatch }
-  <0> "module"          { mkToken TokModule }
-  <0> "opaque"          { mkToken TokOpaque }
-  <0> "open"            { mkToken TokOpen }
-  <0> "renaming"        { mkToken TokRenaming }
-  <0> "@sig"            { mkToken TokSig }
-  <0> "then"            { mkToken TokThen }
-  <0> "type"            { mkToken TokType }
-  <0> "unit"            { mkToken TokUnit }
-  <0> "using"           { mkToken TokUsing }
-  <0> "where"           { mkToken TokWhere }
-  <0> "with"            { mkToken TokWith }
+  <0> "data"            { keyword KwData }
+  <0> "else"            { keyword KwElse }
+  <0> "fn"              { keyword KwLambda }
+  <0> "if"              { keyword KwIf }
+  <0> "in"              { keyword KwIn }
+  <0> "include"         { keyword KwInclude }
+  <0> "infix"           { keyword KwInfix }
+  <0> "infixl"          { keyword KwInfixL }
+  <0> "infixr"          { keyword KwInfixR }
+  <0> "let"             { keyword KwLet }
+  <0> "match"           { keyword KwMatch }
+  <0> "module"          { keyword KwModule }
+  <0> "opaque"          { keyword KwOpaque }
+  <0> "open"            { keyword KwOpen }
+  <0> "record"          { keyword KwRecord }
+  <0> "renaming"        { keyword KwRenaming }
+  <0> "then"            { keyword KwThen }
+  <0> "when"            { keyword KwWhen }
+  <0> "where"           { keyword KwWhere }
+  <0> "with"            { keyword KwWith }
+
+  -- Reserved Symbols
+  <0> "->"              { symbol SymArrow }
+  <0> "@"               { symbol SymAs }
+  <0> "=>"              { symbol SymCase }
+  <0> "}"               { symbol SymCloseBrace }
+  <0> "]"               { symbol SymCloseBracket }
+  <0> ")"               { symbol SymCloseParen }
+  <0> ":"               { symbol SymColon }
+  <0> "."               { symbol SymDot }
+  <0> ".."              { symbol SymDotDot }
+  <0> "="               { symbol SymEqual }
+  <0> "{"               { symbol SymOpenBrace }
+  <0> "["               { symbol SymOpenBracket }
+  <0> "("               { symbol SymOpenParen }
+  <0> "?"               { symbol SymQuestionMark }
+  <0> ";"               { symbol SymSemi }
+  <0> "_"               { symbol SymUnderscore }
+  <0> "|"               { symbol SymVerticalBar }
 
   -- Literals
-  <0> @integer          { string $ TokInt . parseInt . T.filter (/= '_') }
-  <0> @float            { string $ TokFloat . unsafeReadDouble . T.filter (/= '_') }
+  <0> \' @char \'       { litChar }
+  <0> @float            { litFloat }
+  <0> @integer          { litInt }
+  <0> \" [^\"]* \"      { litString }
+  <0> \"\"\" .* \"\"\"  { litString }
 
-  <0> \' @char \'       { mkToken TokChar }
-  <0> \" [^\"]* \"      { string $ TokString }
-  <0> \"\"\" .* \"\"\"  { string $ TokMultiString }
-  <0> @varid            { getVariable }
+  -- Identifiers
+  <0> @var_id           { getVariable }
 
 {
 ------------------------------------------------------------------------------
@@ -169,19 +147,53 @@ alexInitUserState =
 
 mkToken :: Tok -> AlexInput -> Int -> Alex Token
 mkToken tok (p, _, _, str) len =
-  let lexeme :: Text
-      lexeme = T.take len str
+  let lexeme = T.take len str
    in return $ Token p tok lexeme
 
 string :: (Text -> Tok) -> AlexInput -> Int -> Alex Token
 string tokenizer (p, _, _, str) len =
-  let lexeme :: Text
-      lexeme = T.take len str
+  let lexeme = T.take len str
    in return $ Token p (tokenizer lexeme) lexeme
 
-keyword :: AlexInput -> Int -> Alex Token
+litInt :: AlexInput -> Int -> Alex Token
+litInt (p, _, _, str) len =
+  let lexeme = T.take len str
+      tok = TokLiteral $ LitInt $ parseInt $ T.filter (/= '_') str
+   in return $ Token p tok lexeme
+
+litFloat :: AlexInput -> Int -> Alex Token
+litFloat (p, _, _, str) len =
+  let lexeme = T.take len str
+      tok = TokLiteral $ LitFloat $ unsafeReadDouble $ T.filter (/= '_') str
+   in return $ Token p tok lexeme
+
+litChar :: AlexInput -> Int -> Alex Token
+litChar (p, _, _, str) len =
+  let lexeme = T.take len str
+      tok = TokLiteral $ LitChar $ T.head $ T.tail $ T.init str
+   in return $ Token p tok lexeme
+
+litString :: AlexInput -> Int -> Alex Token
+litString (p, _, _, str) len =
+  let lexeme = T.take len str
+      tok = TokLiteral $ LitString str
+   in return $ Token p tok lexeme
+
+docComment :: AlexInput -> Int -> Alex Token
+docComment =
+  mkToken TokDocComment
+
+lineComment :: AlexInput -> Int -> Alex Token
+lineComment =
+  mkToken TokComment
+
+keyword :: Keyword -> AlexInput -> Int -> Alex Token
 keyword =
-  string TokKeyword
+  mkToken . TokKeyword
+
+symbol :: Symbol -> AlexInput -> Int -> Alex Token
+symbol =
+  mkToken . TokSymbol
 
 getVariable :: AlexInput -> Int -> Alex Token
 getVariable (p, _, _, input) len =

@@ -93,7 +93,6 @@ library
     build-depends:
         base ^>=4.19.1.0,
         array,
-        containers,
         text
 
     build-tool-depends:
