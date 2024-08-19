@@ -83,9 +83,12 @@ tokens :-
   <0> "#".*             { lineComment }
 
   -- Reserved Keywords
+  <0> "as"              { keyword KwAs }
   <0> "data"            { keyword KwData }
   <0> "else"            { keyword KwElse }
   <0> "fn"              { keyword KwLambda }
+  <0> "foreign"         { keyword KwForeign }
+  <0> "hiding"          { keyword KwHiding }
   <0> "if"              { keyword KwIf }
   <0> "in"              { keyword KwIn }
   <0> "include"         { keyword KwInclude }
@@ -100,6 +103,7 @@ tokens :-
   <0> "record"          { keyword KwRecord }
   <0> "renaming"        { keyword KwRenaming }
   <0> "then"            { keyword KwThen }
+  <0> "using"           { keyword KwUsing }
   <0> "when"            { keyword KwWhen }
   <0> "where"           { keyword KwWhere }
   <0> "with"            { keyword KwWith }

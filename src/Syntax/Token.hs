@@ -20,12 +20,18 @@ data Literal
   deriving (Eq, Show)
 
 data Keyword
-  = -- | data
+  = -- | as
+    KwAs
+  | -- | data
     KwData
   | -- | else
     KwElse
   | -- | fn
     KwFn
+  | -- | foreign
+    KwForeign
+  | -- | hiding
+    KwHiding
   | -- | if
     KwIf
   | -- | in
@@ -56,6 +62,8 @@ data Keyword
     KwRenaming
   | -- | then
     KwThen
+  | -- | using
+    KwUsing
   | -- | when
     KwWhen
   | -- | where
