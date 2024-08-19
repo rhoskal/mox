@@ -97,6 +97,8 @@ library
     build-depends:
         base ^>=4.19.1.0,
         array,
+        directory,
+        isocline >=1.0.9,
         optparse-applicative,
         text
 

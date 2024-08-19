@@ -1,4 +1,6 @@
 module Command.Repl where
 
+import Repl.Repl
+
 run :: IO ()
-run = error "not implemented yet"
+run = interpret
