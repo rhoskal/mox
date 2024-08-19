@@ -79,9 +79,13 @@ library
 
     -- Modules exported by the library.
     exposed-modules:
-        Lexer
-        SrcLoc
-        Token
+        Formatter.Pretty
+        Linter.Lint
+        Repl.Command
+        Repl.Repl
+        Syntax.Lexer
+        Syntax.Literal
+        Syntax.Token
 
     -- Modules included in this library but not exported.
     -- other-modules:
@@ -93,6 +97,7 @@ library
     build-depends:
         base ^>=4.19.1.0,
         array,
+        optparse-applicative,
         text
 
     build-tool-depends:
@@ -114,7 +119,23 @@ executable mox
     main-is:          Main.hs
 
     -- Modules included in this executable, other than Main.
-    -- other-modules:
+    other-modules:
+        Command.Add
+        Command.Build
+        Command.Clean
+        Command.Deps
+        Command.Docs
+        Command.Format
+        Command.Lint
+        Command.Lsp
+        Command.New
+        Command.Publish
+        Command.Remove
+        Command.Repl
+        Command.Run
+        Command.Search
+        Command.Test
+        Paths_mox
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:

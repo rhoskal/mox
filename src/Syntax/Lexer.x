@@ -1,5 +1,5 @@
 {
-module Lexer
+module Syntax.Lexer
   ( Token(..)
   , lexer
   ) where
@@ -7,7 +7,8 @@ module Lexer
 import Prelude hiding (lex)
 import Data.Text (Text)
 import Data.Text qualified as T
-import Token
+import Syntax.Literal
+import Syntax.Token
 }
 
 %wrapper "monadUserState-strict-text"

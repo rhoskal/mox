@@ -3,8 +3,8 @@
 {-# OPTIONS_GHC -fno-warn-unused-binds #-}
 {-# OPTIONS_GHC -fno-warn-unused-imports #-}
 {-# LANGUAGE CPP #-}
-{-# LINE 1 "src/Lexer.x" #-}
-module Lexer
+{-# LINE 1 "src/Syntax/Lexer.x" #-}
+module Syntax.Lexer
   ( Token(..)
   , lexer
   ) where
@@ -12,7 +12,8 @@ module Lexer
 import Prelude hiding (lex)
 import Data.Text (Text)
 import Data.Text qualified as T
-import Token
+import Syntax.Literal
+import Syntax.Token
 #include "ghcconfig.h"
 import qualified Data.Array
 #define ALEX_MONAD_STRICT_TEXT 1
@@ -22300,7 +22301,7 @@ alexRightContext IBOX(sc) user__ _ _ input__ =
         -- match when checking the right context, just
         -- the first match will do.
 #endif
-{-# LINE 135 "src/Lexer.x" #-}
+{-# LINE 136 "src/Syntax/Lexer.x" #-}
 ------------------------------------------------------------------------------
 -- Alex Setup
 ------------------------------------------------------------------------------
