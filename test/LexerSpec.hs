@@ -2,8 +2,8 @@ module LexerSpec (lexerSpec) where
 
 import Data.Either (isRight)
 import Data.Text qualified as T
-import Lexer (Token)
-import Lexer qualified as L
+import Syntax.Lexer (Token)
+import Syntax.Lexer qualified as L
 import Test.Hspec
 
 lexer :: T.Text -> Either String [Token]
