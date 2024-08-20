@@ -1,17 +1,20 @@
 {
 module Syntax.Lexer
   ( Token(..)
-  , lexer
+  , runLexer
   ) where
 
 import Prelude hiding (lex)
-import Data.Text (Text)
+import Data.ByteString.Lazy (ByteString)
+import Data.ByteString.Lazy qualified as B
+import Data.Char qualified as C
 import Data.Text qualified as T
+import Data.Text.Encoding qualified as TE
 import Syntax.Literal
 import Syntax.Token
 }
 
-%wrapper "monadUserState-strict-text"
+%wrapper "monadUserState-bytestring"
 %encoding "utf8"
 
 -----------------------------------------------------------
@@ -116,6 +119,7 @@ tokens :-
   <0> "]"               { symbol SymCloseBracket }
   <0> ")"               { symbol SymCloseParen }
   <0> ":"               { symbol SymColon }
+  <0> ","               { symbol SymComma }
   <0> "."               { symbol SymDot }
   <0> ".."              { symbol SymDotDot }
   <0> "="               { symbol SymEqual }
@@ -141,77 +145,73 @@ tokens :-
 ------------------------------------------------------------------------------
 -- Alex Setup
 ------------------------------------------------------------------------------
-data Token = Token AlexPosn Tok Text
+data Token = Token AlexPosn Tok ByteString
   deriving (Eq, Show)
 
-type AlexUserState = Text
+type AlexUserState = ByteString
 
 alexInitUserState :: AlexUserState
 alexInitUserState =
-  T.empty
+  B.empty
 
-mkToken :: Tok -> AlexInput -> Int -> Alex Token
-mkToken tok (p, _, _, str) len =
-  let lexeme = T.take len str
-   in return $ Token p tok lexeme
+mkToken :: Tok -> AlexAction Token
+mkToken tok = token tokenize
+  where
+    tokenize (posn, _, input, _) len =
+      let lexeme = B.take (fromIntegral len) input
+       in Token posn tok lexeme
 
-string :: (Text -> Tok) -> AlexInput -> Int -> Alex Token
-string tokenizer (p, _, _, str) len =
-  let lexeme = T.take len str
-   in return $ Token p (tokenizer lexeme) lexeme
+litInt :: AlexInput -> Int64 -> Alex Token
+litInt (posn, _, input, _) len =
+  let lexeme = B.take len input
+      tok = TokLiteral $ LitInt $ parseInt $ B.filter (/= 95) input
+   in return $ Token posn tok lexeme
 
-litInt :: AlexInput -> Int -> Alex Token
-litInt (p, _, _, str) len =
-  let lexeme = T.take len str
-      tok = TokLiteral $ LitInt $ parseInt $ T.filter (/= '_') str
-   in return $ Token p tok lexeme
+litFloat :: AlexInput -> Int64 -> Alex Token
+litFloat (posn, _, input, _) len =
+  let lexeme = B.take len input
+      tok = TokLiteral $ LitFloat $ unsafeReadDouble $ B.filter (/= 95) input
+   in return $ Token posn tok lexeme
 
-litFloat :: AlexInput -> Int -> Alex Token
-litFloat (p, _, _, str) len =
-  let lexeme = T.take len str
-      tok = TokLiteral $ LitFloat $ unsafeReadDouble $ T.filter (/= '_') str
-   in return $ Token p tok lexeme
+litChar :: AlexInput -> Int64 -> Alex Token
+litChar (posn, _, input, _) len =
+  let lexeme = B.take len input
+      tok = TokLiteral $ LitChar $ C.chr $ fromIntegral $ B.head $ B.tail $ B.init input
+   in return $ Token posn tok lexeme
 
-litChar :: AlexInput -> Int -> Alex Token
-litChar (p, _, _, str) len =
-  let lexeme = T.take len str
-      tok = TokLiteral $ LitChar $ T.head $ T.tail $ T.init str
-   in return $ Token p tok lexeme
+litString :: AlexInput -> Int64 -> Alex Token
+litString (posn, _, input, _) len =
+  let lexeme = B.take len input
+      tok = TokLiteral $ LitString $ TE.decodeUtf8Lenient $ B.toStrict lexeme
+   in return $ Token posn tok lexeme
 
-litString :: AlexInput -> Int -> Alex Token
-litString (p, _, _, str) len =
-  let lexeme = T.take len str
-      tok = TokLiteral $ LitString str
-   in return $ Token p tok lexeme
-
-docComment :: AlexInput -> Int -> Alex Token
+docComment :: AlexInput -> Int64 -> Alex Token
 docComment =
   mkToken TokDocComment
 
-lineComment :: AlexInput -> Int -> Alex Token
+lineComment :: AlexInput -> Int64 -> Alex Token
 lineComment =
   mkToken TokComment
 
-keyword :: Keyword -> AlexInput -> Int -> Alex Token
+keyword :: Keyword -> AlexInput -> Int64 -> Alex Token
 keyword =
   mkToken . TokKeyword
 
-symbol :: Symbol -> AlexInput -> Int -> Alex Token
+symbol :: Symbol -> AlexInput -> Int64 -> Alex Token
 symbol =
   mkToken . TokSymbol
 
-getVariable :: AlexInput -> Int -> Alex Token
-getVariable (p, _, _, input) len =
-  let var :: Text
-      var = T.take len input
-   in return $ Token p (TokId var) var
+getVariable :: AlexInput -> Int64 -> Alex Token
+getVariable (p, _, input, _) len =
+  let lexeme = B.take len input
+   in return $ Token p (TokId $ TE.decodeUtf8Lenient $ B.toStrict lexeme) lexeme
 
 lexError :: String -> Alex AlexInput
 lexError s = do
-  (p, _, _, input) <- alexGetInput
+  (p, _, input, _) <- alexGetInput
   alexError (showPosn p ++ ": " ++ s ++
-    (if not (T.null input)
-      then " before " ++ show (T.head input)
+    (if not (B.null input)
+      then " before " ++ show (B.head input)
       else " at end of file"))
 
 showPosn :: AlexPosn -> String
@@ -222,11 +222,11 @@ alexEOF :: Alex Token
 alexEOF =
   return $ Token undefined TokEOF ""
 
-alexInitFilename :: Text -> Alex ()
+alexInitFilename :: ByteString -> Alex ()
 alexInitFilename fileName =
   Alex $ \s -> Right (s { alex_ust = fileName }, ())
 
-alexGetFilename :: Alex Text
+alexGetFilename :: Alex ByteString
 alexGetFilename =
   Alex $ \s -> Right (s, alex_ust s)
 
@@ -237,7 +237,7 @@ scanMany = do
     then return [token']
     else (token':) <$> scanMany
 
-lexer :: Text -> Text -> Either String [Token]
-lexer source input =
+runLexer :: ByteString -> ByteString -> Either String [Token]
+runLexer source input =
   runAlex input $ alexInitFilename source >> init <$> scanMany
 }

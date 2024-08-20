@@ -1,35 +1,34 @@
 module Syntax.Literal where
 
-import Data.Char qualified as C
+import Data.ByteString.Lazy (ByteString)
+import Data.ByteString.Lazy qualified as B
 import Data.Maybe (fromMaybe)
-import Data.Text (Text)
-import Data.Text qualified as T
 import Text.Read (readMaybe)
 
-parseInt :: Text -> Integer
+parseInt :: ByteString -> Integer
 parseInt = parseSign parsePosInt
 
-parseSign :: (Text -> Integer) -> Text -> Integer
+parseSign :: (ByteString -> Integer) -> ByteString -> Integer
 parseSign f str =
-  case T.uncons str of
+  case B.uncons str of
     Just (c, rest) ->
-      if c == '-'
+      if c == 45
         then negate $ f rest
         else f str
     Nothing -> f str
 
-parsePosInt :: Text -> Integer
+parsePosInt :: ByteString -> Integer
 parsePosInt str =
-  case T.splitAt 2 str of
+  case B.splitAt 2 str of
     ("0x", digits) -> digitsToNum 16 digits
     ("0o", digits) -> digitsToNum 8 digits
     ("0b", digits) -> digitsToNum 2 digits
     _ -> digitsToNum 10 str
 
-digitsToNum :: Integer -> Text -> Integer
+digitsToNum :: Integer -> ByteString -> Integer
 digitsToNum base =
-  T.foldl' (\acc d -> acc * base + fromIntegral (C.digitToInt d)) 0
+  B.foldl' (\acc d -> acc * base + fromIntegral (d - 48)) 0
 
-unsafeReadDouble :: Text -> Double
+unsafeReadDouble :: ByteString -> Double
 unsafeReadDouble str =
-  fromMaybe (error $ "invalid float: " ++ show str) (readMaybe $ T.unpack str)
+  fromMaybe (error $ "invalid float: " ++ show str) (readMaybe $ show str)

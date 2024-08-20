@@ -97,6 +97,7 @@ library
     build-depends:
         base ^>=4.19.1.0,
         array,
+        bytestring,
         directory,
         isocline >=1.0.9,
         optparse-applicative,
@@ -184,6 +185,7 @@ test-suite mox-test
     build-depends:
         base ^>=4.19.1.0,
         mox,
+        bytestring,
         hspec,
         QuickCheck,
         text

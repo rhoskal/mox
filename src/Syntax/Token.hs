@@ -26,8 +26,6 @@ data Keyword
     KwData
   | -- | else
     KwElse
-  | -- | fn
-    KwFn
   | -- | foreign
     KwForeign
   | -- | hiding
