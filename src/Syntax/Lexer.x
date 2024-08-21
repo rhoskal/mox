@@ -6,7 +6,7 @@ module Syntax.Lexer
 
 import Prelude hiding (lex)
 import Data.ByteString.Lazy (ByteString)
-import Data.ByteString.Lazy qualified as B
+import Data.ByteString.Lazy qualified as BL
 import Data.Char qualified as C
 import Data.Text qualified as T
 import Data.Text.Encoding qualified as TE
@@ -75,7 +75,8 @@ $whitespace    = [\t \n \r \f \v]
 @any_id         = @var_id | @constr_id
 
 @char           = $letter
-@string         = $letter+
+@string         = \" [^\"]* \"
+                | \"\"\" .* \"\"\"
 
 -----------------------------------------------------------
 -- Tokenizer
@@ -135,8 +136,7 @@ tokens :-
   <0> \' @char \'       { litChar }
   <0> @float            { litFloat }
   <0> @integer          { litInt }
-  <0> \" [^\"]* \"      { litString }
-  <0> \"\"\" .* \"\"\"  { litString }
+  <0> @string           { litString }
 
   -- Identifiers
   <0> @var_id           { getVariable }
@@ -152,37 +152,37 @@ type AlexUserState = ByteString
 
 alexInitUserState :: AlexUserState
 alexInitUserState =
-  B.empty
+  BL.empty
 
 mkToken :: Tok -> AlexAction Token
 mkToken tok = token tokenize
   where
     tokenize (posn, _, input, _) len =
-      let lexeme = B.take (fromIntegral len) input
+      let lexeme = BL.take (fromIntegral len) input
        in Token posn tok lexeme
 
 litInt :: AlexInput -> Int64 -> Alex Token
 litInt (posn, _, input, _) len =
-  let lexeme = B.take len input
-      tok = TokLiteral $ LitInt $ parseInt $ B.filter (/= 95) input
+  let lexeme = BL.take len input
+      tok = TokLiteral $ LitInt $ parseInt $ BL.filter (/= 95) input
    in return $ Token posn tok lexeme
 
 litFloat :: AlexInput -> Int64 -> Alex Token
 litFloat (posn, _, input, _) len =
-  let lexeme = B.take len input
-      tok = TokLiteral $ LitFloat $ unsafeReadDouble $ B.filter (/= 95) input
+  let lexeme = BL.take len input
+      tok = TokLiteral $ LitFloat $ unsafeReadDouble $ BL.filter (/= 95) input
    in return $ Token posn tok lexeme
 
 litChar :: AlexInput -> Int64 -> Alex Token
 litChar (posn, _, input, _) len =
-  let lexeme = B.take len input
-      tok = TokLiteral $ LitChar $ C.chr $ fromIntegral $ B.head $ B.tail $ B.init input
+  let lexeme = BL.take len input
+      tok = TokLiteral $ LitChar $ C.chr $ fromIntegral $ BL.head $ BL.tail $ BL.init input
    in return $ Token posn tok lexeme
 
 litString :: AlexInput -> Int64 -> Alex Token
 litString (posn, _, input, _) len =
-  let lexeme = B.take len input
-      tok = TokLiteral $ LitString $ TE.decodeUtf8Lenient $ B.toStrict lexeme
+  let lexeme = BL.take len input
+      tok = TokLiteral $ LitString $ TE.decodeUtf8Lenient $ BL.toStrict lexeme
    in return $ Token posn tok lexeme
 
 docComment :: AlexInput -> Int64 -> Alex Token
@@ -203,15 +203,15 @@ symbol =
 
 getVariable :: AlexInput -> Int64 -> Alex Token
 getVariable (p, _, input, _) len =
-  let lexeme = B.take len input
-   in return $ Token p (TokId $ TE.decodeUtf8Lenient $ B.toStrict lexeme) lexeme
+  let lexeme = BL.take len input
+   in return $ Token p (TokId $ TE.decodeUtf8Lenient $ BL.toStrict lexeme) lexeme
 
 lexError :: String -> Alex AlexInput
 lexError s = do
   (p, _, input, _) <- alexGetInput
   alexError (showPosn p ++ ": " ++ s ++
-    (if not (B.null input)
-      then " before " ++ show (B.head input)
+    (if not (BL.null input)
+      then " before " ++ show (BL.head input)
       else " at end of file"))
 
 showPosn :: AlexPosn -> String

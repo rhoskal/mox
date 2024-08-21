@@ -1,7 +1,7 @@
 module Syntax.Literal where
 
 import Data.ByteString.Lazy (ByteString)
-import Data.ByteString.Lazy qualified as B
+import Data.ByteString.Lazy qualified as BL
 import Data.Maybe (fromMaybe)
 import Text.Read (readMaybe)
 
@@ -10,7 +10,7 @@ parseInt = parseSign parsePosInt
 
 parseSign :: (ByteString -> Integer) -> ByteString -> Integer
 parseSign f str =
-  case B.uncons str of
+  case BL.uncons str of
     Just (c, rest) ->
       if c == 45
         then negate $ f rest
@@ -19,7 +19,7 @@ parseSign f str =
 
 parsePosInt :: ByteString -> Integer
 parsePosInt str =
-  case B.splitAt 2 str of
+  case BL.splitAt 2 str of
     ("0x", digits) -> digitsToNum 16 digits
     ("0o", digits) -> digitsToNum 8 digits
     ("0b", digits) -> digitsToNum 2 digits
@@ -27,7 +27,7 @@ parsePosInt str =
 
 digitsToNum :: Integer -> ByteString -> Integer
 digitsToNum base =
-  B.foldl' (\acc d -> acc * base + fromIntegral (d - 48)) 0
+  BL.foldl' (\acc d -> acc * base + fromIntegral (d - 48)) 0
 
 unsafeReadDouble :: ByteString -> Double
 unsafeReadDouble str =

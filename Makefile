@@ -48,6 +48,10 @@ dev: ## Run ghcid
 format: ## Format code
 	ormolu --mode inplace **/*.hs
 
+.PHONY: lexer
+lexer: ## Run alex to generate lexer
+	alex -g src/Syntax/Lexer.x
+
 .PHONY: lint
 lint: ## Lint code
 	hlint .
