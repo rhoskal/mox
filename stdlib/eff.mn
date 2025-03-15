@@ -19,83 +19,83 @@ module Eff exposing
 ## ➢
 ## :
 ## ```
-type alias Eff(e, a) =
-    SyncEffect(e, a)
+type alias Eff e a =
+    SyncEffect e a
 
 ## Lifts an error into a failed `Eff`.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Eff.fail("foobar!") : Eff(String, String)
+## ➢ Eff.fail "foobar!" : Eff String String
 ## :
 ## ```
-let fail(err : e) -> Eff(e, Unit) =
-    Scheduler.Sync.fail(err)
+let fail (err : e) : Eff e Unit =
+    Scheduler.Sync.fail err
 
 ## Lifts a value into a successful `#ff`.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Eff.success("foobar") : Eff(String, String)
+## ➢ Eff.success "foobar" : Eff String String
 ## :
 ## ```
-let succeed(value : a) -> Eff(Unit, a) =
-    Scheduler.Sync.succeed(value)
+let succeed (value : a) : Eff Unit a =
+    Scheduler.Sync.succeed value
 
-let map(eff_a : Eff(e, a), f : (a -> value)) -> Eff(e, value) =
-    match run(eff_a) on
-    | Err ea => fail(ea)
-    | Ok a => succeed(f(a))
+let map (eff_a : Eff e a) (f : a -> b) : Eff e b =
+    match run eff_a on
+    | Err ea => fail ea
+    | Ok a => succeed (f a)
 
-let map2(
-    eff_a : Eff(e, a),
-    eff_b : Eff(e, b),
-    f : ((a, b) -> value)
-) -> Eff(e, value) =
-    match run(eff_a) on
-    | Err(ea) => fail(ea)
-    | Ok(a) =>
-        match run(eff_b) on
-        | Err(eb) => fail(eb)
-        | Ok(b) => succeed(f(a, b))
+let map2
+    (eff_a : Eff e a)
+    (eff_b : Eff e b)
+    (f : a -> b -> c)
+    : Eff e c =
+    match run eff_a on
+    | Err ea => fail ea
+    | Ok a =>
+        match run eff_b on
+        | Err eb => fail eb
+        | Ok b => succeed (f a b)
 
-let map3(
-    eff_a : Eff(e, a),
-    eff_b : Eff(e, b),
-    eff_c : Eff(e, c),
-    f : ((a, b, c) -> value)
-) -> Eff(e, value) =
-    match run(eff_a) on
-    | Err(ea) => fail(ea)
-    | Ok(a) =>
-        match run(eff_b) on
-        | Err(eb) => fail(eb)
-        | Ok(b) =>
-            match run(eff_c) on
-            | Err(ec) => fail(ec)
-            | Ok(c) => succeed(f(a, b, c))
+let map3
+    (eff_a : Eff e a)
+    (eff_b : Eff e b)
+    (eff_c : Eff e c)
+    (f : a -> b -> c -> d)
+    : Eff e d =
+    match run eff_a on
+    | Err ea => fail ea
+    | Ok a =>
+        match run eff_b on
+        | Err eb => fail eb
+        | Ok b =>
+            match run eff_c on
+            | Err ec => fail ec
+            | Ok c => succeed (f a b c)
 
-let map4(
-    eff_a : Eff(e, a),
-    eff_b : Eff(e, b),
-    eff_c : Eff(e, c),
-    eff_d : Eff(e, d),
-    f : ((a, b, c, d) -> value)
-) -> Eff(e, value) =
-    match run(eff_a) on
-    | Err(ea) => fail(ea)
-    | Ok(a) =>
-        match run(eff_b) on
-        | Err(eb) => fail(eb)
-        | Ok(b) =>
-            match run(eff_c) on
-            | Err(ec) => fail(ec)
-            | Ok(c) =>
-                match run(eff_d) on
-                | Err(ed) => fail(ed)
-                | Ok(d) => succeed(f(a, b, c, d))
+let map4
+    (eff_a : Eff e a)
+    (eff_b : Eff e b)
+    (eff_c : Eff e c)
+    (eff_d : Eff e d)
+    (f : a -> b -> c -> d -> value)
+    : Eff e value =
+    match run eff_a on
+    | Err ea => fail ea
+    | Ok a =>
+        match run eff_b on
+        | Err eb => fail eb
+        | Ok b =>
+            match run eff_c on
+            | Err ec => fail ec
+            | Ok c =>
+                match run eff_d on
+                | Err ed => fail ed
+                | Ok d => succeed (f a b c d)
 
 ## Equivalent of `>>=` from the `Monad` typeclass.
 ##
@@ -105,13 +105,13 @@ let map4(
 ## ➢ Eff.and_then ...
 ## ...
 ## ```
-let and_then(eff : Eff(e, a), f : (a -> Eff(e, value))) -> Eff(e, value) =
-    todo("not implemented")
+let and_then (eff : Eff e a) (f : a -> Eff e b) : Eff e b =
+    todo "not implemented"
 
-let run(eff : Eff(e, a)) -> Result(e, a) =
-    todo("not implemented")
+let run (eff : Eff e a) : Result e a =
+    todo "not implemented"
 
-let from_result(result : Result(e, a)) -> Eff(e, a) =
+let from_result (result : Result e a) : Eff e a =
     match result on
-    | Err(e) => fail(e)
-    | Ok(a) => succeed(a)
+    | Err e => fail e
+    | Ok a => succeed a

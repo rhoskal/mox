@@ -1,5 +1,5 @@
 module Set exposing
-    ( Set
+    ( Set(..)
     , diff
     , empty
     , empty?
@@ -29,126 +29,116 @@ open Unit using (Unit)
 ## Operations like insert, remove, and lookup have O(log n) complexity.
 ##
 ## @since 0.1.0
-type alias Set(a) =
-    Set(TM.TreeMap(a, Unit)))
+type alias Set a =
+    Set (TM.TreeMap a Unit)
 
 ## Create an empty set.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Set.empty()
-## {} : Set(a)
+## ➢ Set.empty
+## {} : Set a
 ## ```
-let empty() -> Set(a) =
-    Set(TM.empty())
+let empty : Set a =
+    todo "not implemented"
 
 ## Determine if a set is empty.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Set.empty?(Set.empty())
+## ➢ Set.empty? Set.empty
 ## True : Bool
 ##
-## ➢ Set.empty?(Set.singleton(1))
+## ➢ Set.empty? (Set.singleton 1)
 ## False : Bool
 ## ```
-let empty?(set : Set(a)) -> Bool =
-    match set on
-    | Set(map) => TM.empty?(map)
+let empty? : Set a -> Bool =
+    todo "not implemented"
 
 ## Create a set with one value.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Set.singleton(42)
-## {42} : Set(Int)
+## ➢ Set.singleton 42
+## {42} : Set Int
 ## ```
-let singleton(value : comparable) -> Set(comparable) =
-    Set(TM.singleton(value, Unit))
+let singleton : comparable -> Set comparable =
+    todo "not implemented"
 
 ## Insert a value into a set.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Set.insert(Set.singleton(1), 2)
-## {1, 2} : Set(Int)
+## ➢ Set.insert 2 (Set.singleton 1)
+## {1, 2} : Set Int
 ##
-## ➢ Set.insert(Set.singleton(1), 1)
-## {1} : Set(Int)
+## ➢ Set.insert 1 (Set.singleton 1)
+## {1} : Set Int
 ## ```
-let insert(set : Set(comparable), value : comparable) -> Set(comparable) =
-    match set on
-    | Set(map) => Set(TM.insert(map, value, Unit))
+let insert : comparable -> Set comparable -> Set comparable =
+    todo "not implemented"
 
 ## Remove a value from a set. If the value is not found, no changes are made.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Set.remove(Set.from_list([1, 2, 3]), 2)
-## {1, 3} : Set(Int)
+## ➢ Set.remove 2 (Set.from_list [1, 2, 3])
+## {1, 3} : Set Int
 ## ```
-let remove(set : Set(comparable), value : comparable) -> Set(comparable) =
-    match set on
-    | Set(map) => Set(TM.remove(map, value))
+let remove : comparable -> Set comparable -> Set comparable =
+    todo "not implemented"
 
 ## Determine if a value is in a set.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Set.member?(Set.from_list([1, 2, 3]), 2)
+## ➢ Set.member? 2 (Set.from_list [1, 2, 3])
 ## True : Bool
 ##
-## ➢ Set.member?(Set.from_list([1, 2, 3]), 4)
+## ➢ Set.member? 4 (Set.from_list [1, 2, 3])
 ## False : Bool
 ## ```
-let member?(set : Set(comparable), value : comparable) -> Bool =
-    match set on
-    | Set(map) =>
-        match TM.get(map, value) on
-        | None => False
-        | Some(_) => True
+let member? : comparable -> Set comparable -> Bool =
+    todo "not implemented"
 
 ## Determine the number of elements in a set.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Set.size(Set.from_list([1, 2, 3]))
+## ➢ Set.size (Set.from_list [1, 2, 3])
 ## 3 : Int
 ## ```
-let size(set : Set(a)) -> Int =
-    match set on
-    | Set(map) => TM.size(map)
+let size : Set a -> Int =
+    todo "not implemented"
 
 ## Get the union of two sets. Keep all values.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Set.union(Set.from_list([1, 2]), Set.from_list([2, 3]))
-## {1, 2, 3} : Set(Int)
+## ➢ Set.union (Set.from_list [2, 3]) (Set.from_list [1, 2])
+## {1, 2, 3} : Set Int
 ## ```
-let union(set1 : Set(comparable), set2 : Set(comparable)) -> Set(comparable) =
-    match (set1, set2) on
-    | (Set(map1), Set(map2)) => Set(TM.union(map1, map2))
+let union : Set comparable -> Set comparable -> Set comparable =
+    todo "not implemented"
 
 ## Get the intersection of two sets. Keeps values that appear in both sets.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Set.intersect(Set.from_list([1, 2]), Set.from_list([2, 3]))
-## {2} : Set(Int)
+## ➢ Set.intersect (Set.from_list [2, 3]) (Set.from_list [1, 2])
+## {2} : Set Int
 ## ```
-let intersect(set1 : Set(comparable), set2 : Set(comparable)) -> Set(comparable) =
-    match (set1, set2) on
-    | (Set(map1), Set(map2)) => Set(TM.intersect(map1, map2))
+let intersect : Set comparable -> Set comparable -> Set comparable =
+    todo "not implemented"
 
 ## Get the difference between the first set and the second. Keeps values
 ## that do not appear in the second set.
@@ -156,164 +146,119 @@ let intersect(set1 : Set(comparable), set2 : Set(comparable)) -> Set(comparable)
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Set.diff(Set.from_list([1, 2, 3]), Set.from_list([2, 3, 4]))
-## {1} : Set(Int)
+## ➢ Set.diff (Set.from_list [2, 3, 4]) (Set.from_list [1, 2, 3])
+## {4} : Set Int
 ## ```
-let diff(set1 : Set(comparable), set2 : Set(comparable)) -> Set(comparable) =
-    match (set1, set2) on
-    | (Set(map1), Set(map2)) => Set(TM.diff(map1, map2))
+let diff : Set comparable -> Set comparable -> Set comparable =
+    todo "not implemented"
 
 ## Determine if the first set is a subset of the second set.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Set.subset?(Set.from_list([1, 2]), Set.from_list([1, 2, 3]))
-## True : Bool
+## ➢ Set.subset? (Set.from_list [1, 2, 3]) (Set.from_list [1, 2])
+## False : Bool
 ##
-## ➢ Set.subset?(Set.from_list([1, 4]), Set.from_list([1, 2, 3]))
+## ➢ Set.subset? (Set.from_list [1, 2, 3]) (Set.from_list [1, 4])
 ## False : Bool
 ## ```
-let subset?(set1 : Set(comparable), set2 : Set(comparable)) -> Bool =
-    match (set1, set2) on
-    | (Set(map1), Set(map2)) =>
-        let keys1 = TM.keys(map1)
-        List.all?(keys1, fn(key) =>
-            match TM.get(map2, key) on
-            | None => False
-            | Some(_) => True
-        )
+let subset? : Set comparable -> Set comparable -> Bool =
+    todo "not implemented"
 
 ## Determine if the first set is a superset of the second set.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Set.superset?(Set.from_list([1, 2, 3]), Set.from_list([1, 2]))
-## True : Bool
+## ➢ Set.superset? (Set.from_list [1, 2]) (Set.from_list [1, 2, 3])
+## False : Bool
 ##
-## ➢ Set.superset?(Set.from_list([1, 2, 3]), Set.from_list([1, 4]))
+## ➢ Set.superset? (Set.from_list [1, 4]) (Set.from_list [1, 2, 3])
 ## False : Bool
 ## ```
-let superset?(set1 : Set(comparable), set2 : Set(comparable)) -> Bool =
-    subset?(set2, set1)
-
-## Determine if two sets have no elements in common.
-##
-## @since 0.1.0
-##
-## ```
-## ➢ Set.disjoint?(Set.from_list([1, 2]), Set.from_list([3, 4]))
-## True : Bool
-##
-## ➢ Set.disjoint?(Set.from_list([1, 2]), Set.from_list([2, 3]))
-## False : Bool
-## ```
-let disjoint?(set1 : Set(comparable), set2 : Set(comparable)) -> Bool =
-    match (set1, set2) on
-    | (Set(map1), Set(map2)) =>
-        let keys1 = TM.keys(map1)
-
-        List.all?(keys1, fn(key) =>
-            match TM.get(map2, key) on
-            | None => True
-            | Some(_) => False
-        )
+let superset? : Set comparable -> Set comparable -> Bool =
+    todo "not implemented"
 
 ## Convert a set into a list, sorted from lowest to highest.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Set.to_list(Set.from_list([3, 1, 2]))
-## [1, 2, 3] : List(Int)
+## ➢ Set.to_list (Set.from_list [3, 1, 2])
+## [1, 2, 3] : List Int
 ## ```
-let to_list(set : Set(a)) -> List(a) =
-    match set on
-    | Set(map) => TM.keys(map)
+let to_list : Set a -> List a =
+    todo "not implemented"
 
 ## Convert a list into a set, removing any duplicates.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Set.from_list([1, 2, 1, 3, 2])
-## {1, 2, 3} : Set(Int)
+## ➢ Set.from_list [1, 2, 1, 3, 2]
+## {1, 2, 3} : Set Int
 ## ```
-let from_list(list : List(comparable)) -> Set(comparable) =
-    List.fold_left(
-        list,
-        empty(),
-        fn(acc, value) => insert(acc, value)
-    )
+let from_list : List comparable -> Set comparable =
+    todo "not implemented"
 
 ## Fold over the values in a set, in order from lowest to highest.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Set.fold_left(Set.from_list([1, 2, 3]), fn(x, acc) => acc + x, 0)
+## ➢ Set.fold_left (fn x acc => acc + x) 0 (Set.from_list [1, 2, 3])
 ## 6 : Int
 ## ```
-let fold_left(set : Set(a), f : (a, b -> b), init : b) -> b =
-    match set on
-    | Set(map) => TM.fold_left(map, fn(k, _, acc) => f(k, acc), init)
+let fold_left : (a -> b -> b) -> b -> Set a -> b =
+    todo "not implemented"
 
 ## Fold over the values in a set, in order from highest to lowest.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Set.fold_right(Set.from_list([1, 2, 3]), fn(x, acc) => acc + x, 0)
+## ➢ Set.fold_right (fn x acc => acc + x) 0 (Set.from_list [1, 2, 3])
 ## 6 : Int
 ## ```
-let fold_right(set : Set(a), f : (a, b -> b), init : b) -> b =
-    match set on
-    | Set(map) => TM.fold_right(map, fn(k, _, acc) => f(k, acc), init)
+let fold_right : (a -> b -> b) -> b -> Set a -> b =
+    todo "not implemented"
 
 ## Map a function onto a set, creating a new set with no duplicates.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Set.map(Set.from_list([1, 2, 3]), fn(x) => x * 2)
-## {2, 4, 6} : Set(Int)
+## ➢ Set.map (fn x => x * 2) (Set.from_list [1, 2, 3])
+## {2, 4, 6} : Set Int
 ##
-## ➢ Set.map(Set.from_list([1, 2, 3, 4]), fn(x) => mod(x, 2))
-## {0, 1} : Set(Int)
+## ➢ Set.map (fn x => mod x 2) (Set.from_list [1, 2, 3, 4])
+## {0, 1} : Set Int
 ## ```
-let map(set : Set(comparable), f : (comparable -> comparable2)) -> Set(comparable2) =
-    match set on
-    | Set(map) =>
-        fold_left(
-            set,
-            fn(value, acc) => insert(acc, f(value)),
-            empty()
-        )
+let map : (comparable -> comparable2) -> Set comparable -> Set comparable2 =
+    todo "not implemented"
 
 ## Only keep elements that satisfy the given predicate.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Set.keep(Set.from_list([1, 2, 3, 4]), fn(x) => mod(x, 2) == 0)
-## {2, 4} : Set(Int)
+## ➢ Set.keep (fn x => mod x 2 == 0) (Set.from_list [1, 2, 3, 4])
+## {2, 4} : Set Int
 ## ```
-let keep(set : Set(comparable), pred : (comparable -> Bool)) -> Set(comparable) =
-    match set on
-    | Set(map) => Set(TM.keep(map, fn(k, _) => pred(k)))
+let keep : (comparable -> Bool) -> Set comparable -> Set comparable =
+    todo "not implemented"
 
 ## Returns a set by excluding the elements which satisfy the given predicate.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Set.reject(Set.from_list([1, 2, 3, 4]), fn(x) => mod(x, 2) == 0)
-## {1, 3} : Set(Int)
+## ➢ Set.reject (fn x => mod x 2 == 0) (Set.from_list [1, 2, 3, 4])
+## {1, 3} : Set Int
 ## ```
-let reject(set : Set(comparable), pred : (comparable -> Bool)) -> Set(comparable) =
-    match set on
-    | Set(map) => Set(TM.reject(map, fn(k, _) => pred(k)))
+let reject : (comparable -> Bool) -> Set comparable -> Set comparable =
+    todo "not implemented"
 
 ## Create two new sets. The first contains all the elements that passed the
 ## given test, and the second contains all the elements that did not.
@@ -321,11 +266,8 @@ let reject(set : Set(comparable), pred : (comparable -> Bool)) -> Set(comparable
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Set.partition(Set.from_list([1, 2, 3, 4]), fn(x) => mod(x, 2) == 0)
-## ({2, 4}, {1, 3}) : (Set(Int), Set(Int))
+## ➢ Set.partition (fn x => mod x 2 == 0) (Set.from_list [1, 2, 3, 4])
+## ({2, 4}, {1, 3}) : (Set Int, Set Int)
 ## ```
-let partition(set : Set(comparable), pred : (comparable -> Bool)) -> (Set(comparable), Set(comparable)) =
-    match set on
-    | Set(map) =>
-        let (passed, failed) = TM.partition(map, fn(k, _) => pred(k))
-        (Set(passed), Set(failed))
+let partition : (comparable -> Bool) -> Set comparable -> (Set comparable, Set comparable) =
+    todo "not implemented"

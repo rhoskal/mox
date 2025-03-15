@@ -30,77 +30,72 @@ open TreeMap as TM
 ## Keys must be comparable.
 ##
 ## @since 0.1.0
-type Map(k, v) =
-    Map(TM.TreeMap(k, v))
+type Map k v =
+    Map (TM.TreeMap k v)
 
 ## Create an empty map.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Map.empty()
-## {} : Map(k, v)
+## ➢ Map.empty
+## {} : Map k v
 ## ```
-let empty() -> Map(k, v) =
-    Map(TM.empty())
+let empty : Map k v =
+    Map TM.empty
 
 ## Determine if a map is empty.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Map.empty?(Map.empty())
+## ➢ Map.empty? (Map.empty())
 ## True : Bool
 ##
-## ➢ Map.empty?(Map.singleton(1, "one"))
+## ➢ Map.empty? (Map.singleton 1 "one")
 ## False : Bool
 ## ```
-let empty?(map : Map(k, v)) -> Bool =
-    match map on
-    | Map(tree) => TM.empty?(tree)
+let empty? (map : Map k v) : Bool =
+    todo "not implemented"
 
 ## Create a map with a single key-value pair.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Map.singleton(1, "one")
-## {1: "one"} : Map(Int, String)
+## ➢ Map.singleton 1 "one"
+## {1: "one"} : Map Int String
 ## ```
-let singleton(key : comparable, value : v) -> Map(comparable, v) =
-    Map(TM.singleton(key, value))
+let singleton (key : comparable) (value : v) : Map comparable v =
+    todo "not implemented"
 
 ## Get the value associated with a key.
-## Returns `None` if the key is not found.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Map.get(Map.singleton(1, "one"), 1)
-## Some("one") : Maybe(String)
+## ➢ Map.get 1 (Map.singleton 1 "one")
+## Some "one" : Maybe String
 ##
-## ➢ Map.get(Map.singleton(1, "one"), 2)
-## None : Maybe(String)
+## ➢ Map.get 2 (Map.singleton 1 "one")
+## None : Maybe String
 ## ```
-let get(map : Map(comparable, v), key : comparable) -> Maybe(v) =
-    match map on
-    | Map(tree) => TM.get(tree, key)
+let get (key : comparable) (map : Map comparable v) : Maybe v =
+    todo "not implemented"
 
 ## Determine if a map contains a key.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Map.member?(Map.singleton(1, "one"), 1)
+## ➢ Map.member? 1 (Map.singleton 1 "one")
 ## True : Bool
 ##
-## ➢ Map.member?(Map.singleton(1, "one"), 2)
+## ➢ Map.member? 2 (Map.singleton 1 "one")
 ## False : Bool
 ## ```
-let member?(map : Map(comparable, v), key : comparable) -> Bool =
-    match get(map, key) on
-    | None => False
-    | Some(_) => True
+let member? (key : comparable) (map : Map comparable v) : Bool =
+    todo "not implemented"
 
 ## Insert a key-value pair into a map.
 ## If the key already exists, the value is updated.
@@ -108,15 +103,14 @@ let member?(map : Map(comparable, v), key : comparable) -> Bool =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Map.insert(Map.singleton(1, "one"), 2, "two")
-## {1: "one", 2: "two"} : Map(Int, String)
+## ➢ Map.insert 2 "two" (Map.singleton 1 "one")
+## {1: "one", 2: "two"} : Map Int String
 ##
-## ➢ Map.insert(Map.singleton(1, "one"), 1, "ONE")
-## {1: "ONE"} : Map(Int, String)
+## ➢ Map.insert 1 "ONE" (Map.singleton 1 "one")
+## {1: "ONE"} : Map Int String
 ## ```
-let insert(map : Map(comparable, v), key : comparable, value : v) -> Map(comparable, v) =
-    match map on
-    | Map(tree) => Map(TM.insert(tree, key, value))
+let insert (key : comparable) (value : v) (map : Map comparable v) : Map comparable v =
+    todo "not implemented"
 
 ## Update the value at a specific key using the given function.
 ## If the key does not exist, the map is not modified.
@@ -124,18 +118,14 @@ let insert(map : Map(comparable, v), key : comparable, value : v) -> Map(compara
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Map.update(Map.singleton(1, "one"), 1, String.to_upper)
-## {1: "ONE"} : Map(Int, String)
+## ➢ Map.update 1 String.to_upper (Map.singleton 1 "one")
+## {1: "ONE"} : Map Int String
 ##
-## ➢ Map.update(Map.singleton(1, "one"), 2, String.to_upper)
-## {1: "one"} : Map(Int, String)
+## ➢ Map.update 2 String.to_upper (Map.singleton 1 "one")
+## {1: "one"} : Map Int String
 ## ```
-let update(map : Map(comparable, v), key : comparable, f : (v -> v)) -> Map(comparable, v) =
-    match map on
-    | Map(tree) =>
-        match get(map, key) on
-        | None => map
-        | Some(value) => Map(TM.insert(tree, key, f(value)))
+let update (key : comparable) (f : v -> v) (map : Map comparable v) : Map comparable v =
+    todo "not implemented"
 
 ## Remove a key-value pair from a map.
 ## If the key is not found, no changes are made.
@@ -143,36 +133,33 @@ let update(map : Map(comparable, v), key : comparable, f : (v -> v)) -> Map(comp
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Map.remove(Map.from_list([(1, "one"), (2, "two")]), 1)
-## {2: "two"} : Map(Int, String)
+## ➢ Map.remove 1 (Map.from_list [(1, "one"), (2, "two")])
+## {2: "two"} : Map Int String
 ## ```
-let remove(map : Map(comparable, v), key : comparable) -> Map(comparable, v) =
-    match map on
-    | Map(tree) => Map(TM.remove(tree, key))
+let remove (key : comparable) (map : Map comparable v) : Map comparable v =
+    todo "not implemented"
 
 ## Determine the number of key-value pairs in a map.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Map.size(Map.from_list([(1, "one"), (2, "two")]))
+## ➢ Map.size (Map.from_list [(1, "one"), (2, "two")])
 ## 2 : Int
 ## ```
-let size(map : Map(k, v)) -> Int =
-    match map on
-    | Map(tree) => TM.size(tree)
+let size (map : Map k v) : Int =
+    todo "not implemented"
 
 ## Convert a map into a list of key-value pairs, sorted by key.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Map.to_list(Map.from_list([(2, "two"), (1, "one")]))
-## [(1, "one"), (2, "two")] : List((Int, String))
+## ➢ Map.to_list (Map.from_list [(2, "two"), (1, "one")])
+## [(1, "one"), (2, "two")] : List (Int, String)
 ## ```
-let to_list(map : Map(k, v)) -> List((k, v)) =
-    match map on
-    | Map(tree) => TM.to_list(tree)
+let to_list (map : Map k v) : List (k, v) =
+    todo "not implemented"
 
 ## Convert a list of key-value pairs into a map.
 ## If there are duplicate keys, later values overwrite earlier ones.
@@ -180,47 +167,44 @@ let to_list(map : Map(k, v)) -> List((k, v)) =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Map.from_list([(1, "one"), (2, "two"), (1, "ONE")])
-## {1: "ONE", 2: "two"} : Map(Int, String)
+## ➢ Map.from_list [(1, "one"), (2, "two"), (1, "ONE")]
+## {1: "ONE", 2: "two"} : Map Int String
 ## ```
-let from_list(list : List((comparable, v))) -> Map(comparable, v) =
-    Map(TM.from_list(list))
+let from_list (list : List (comparable, v)) : Map comparable v =
+    todo "not implemented"
 
 ## Get a list of all keys in a map, sorted.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Map.keys(Map.from_list([(1, "one"), (2, "two")]))
-## [1, 2] : List(Int)
+## ➢ Map.keys (Map.from_list [(1, "one"), (2, "two")])
+## [1, 2] : List Int
 ## ```
-let keys(map : Map(k, v)) -> List(k) =
-    match map on
-    | Map(tree) => TM.keys(tree)
+let keys (map : Map k v) : List k =
+    todo "not implemented"
 
 ## Get a list of all values in a map, in key order.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Map.values(Map.from_list([(1, "one"), (2, "two")]))
-## ["one", "two"] : List(String)
+## ➢ Map.values (Map.from_list [(1, "one"), (2, "two")])
+## ["one", "two"] : List String
 ## ```
-let values(map : Map(k, v)) -> List(v) =
-    match map on
-    | Map(tree) => TM.values(tree)
+let values (map : Map k v) : List v =
+    todo "not implemented"
 
 ## Combine two maps, favoring values from the second map when keys overlap.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Map.union(Map.from_list([(1, "one"), (2, "two")]), Map.from_list([(2, "TWO"), (3, "three")]))
-## {1: "one", 2: "TWO", 3: "three"} : Map(Int, String)
+## ➢ Map.union (Map.from_list [(2, "TWO"), (3, "three")]) (Map.from_list [(1, "one"), (2, "two")])
+## {1: "one", 2: "two", 3: "three"} : Map Int String
 ## ```
-let union(map1 : Map(comparable, v), map2 : Map(comparable, v)) -> Map(comparable, v) =
-    match (map1, map2) on
-    | (Map(tree1), Map(tree2)) => Map(TM.union(tree1, tree2))
+let union (map2 : Map comparable v) (map1 : Map comparable v) : Map comparable v =
+    todo "not implemented"
 
 ## Keep only key-value pairs where the key exists in both maps.
 ## Values are taken from the first map.
@@ -228,84 +212,77 @@ let union(map1 : Map(comparable, v), map2 : Map(comparable, v)) -> Map(comparabl
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Map.intersect(Map.from_list([(1, "one"), (2, "two")]), Map.from_list([(2, "TWO"), (3, "three")]))
-## {2: "two"} : Map(Int, String)
+## ➢ Map.intersect (Map.from_list [(2, "TWO"), (3, "three")]) (Map.from_list [(1, "one"), (2, "two")])
+## {2: "two"} : Map Int String
 ## ```
-let intersect(map1 : Map(comparable, v), map2 : Map(comparable, v)) -> Map(comparable, v) =
-    match (map1, map2) on
-    | (Map(tree1), Map(tree2)) => Map(TM.intersect(tree1, tree2))
+let intersect (map2 : Map comparable v) (map1 : Map comparable v) : Map comparable v =
+    todo "not implemented"
 
 ## Keep only key-value pairs where the key exists in the first map but not the second.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Map.diff(Map.from_list([(1, "one"), (2, "two")]), Map.from_list([(2, "TWO"), (3, "three")]))
-## {1: "one"} : Map(Int, String)
+## ➢ Map.diff (Map.from_list [(2, "TWO"), (3, "three")]) (Map.from_list [(1, "one"), (2, "two")])
+## {3: "three"} : Map Int String
 ## ```
-let diff(map1 : Map(comparable, v), map2 : Map(comparable, v)) -> Map(comparable, v) =
-    match (map1, map2) on
-    | (Map(tree1), Map(tree2)) => Map(TM.diff(tree1, tree2))
+let diff (map2 : Map comparable v) (map1 : Map comparable v) : Map comparable v =
+    todo "not implemented"
 
 ## Fold over the key-value pairs in a map, in key order from lowest to highest.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Map.fold_left(Map.from_list([(1, "one"), (2, "two")]), fn(k, v, acc) => acc ++ v, "")
+## ➢ Map.fold_left (fn k v acc => acc ++ v) "" (Map.from_list [(1, "one"), (2, "two")])
 ## "onetwo" : String
 ## ```
-let fold_left(map : Map(k, v), f : (k, v, acc -> acc), init : acc) -> acc =
-    match map on
-    | Map(tree) => TM.fold_left(tree, f, init)
+let fold_left (f : k -> v -> acc -> acc) (init : acc) (map : Map k v) : acc =
+    todo "not implemented"
 
 ## Fold over the key-value pairs in a map, in key order from highest to lowest.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Map.fold_right(Map.from_list([(1, "one"), (2, "two")]), fn(k, v, acc) => acc ++ v, "")
+## ➢ Map.fold_right (fn k v acc => acc ++ v) "" (Map.from_list [(1, "one"), (2, "two")])
 ## "twoone" : String
 ## ```
-let fold_right(map : Map(k, v), f : (k, v, acc -> acc), init : acc) -> acc =
-    match map on
-    | Map(tree) => TM.fold_right(tree, f, init)
+let fold_right (f : k -> v -> acc -> acc) (init : acc) (map : Map k v) : acc =
+    todo "not implemented"
 
 ## Transform values in a map.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Map.map(Map.from_list([(1, "one"), (2, "two")]), fn(k, v) => String.to_upper(v))
-## {1: "ONE", 2: "TWO"} : Map(Int, String)
+## ➢ Map.map (fn k v => String.to_upper v) (Map.from_list [(1, "one"), (2, "two")])
+## {1: "ONE", 2: "TWO"} : Map Int String
 ## ```
-let map(map : Map(k, v), f : (k, v -> v2)) -> Map(k, v2) =
-    match map on
-    | Map(tree) => Map(TM.map(tree, f))
+let map (f : k -> v -> v2) (map : Map k v) : Map k v2 =
+    todo "not implemented"
 
 ## Keep only key-value pairs that satisfy the given predicate.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Map.keep(Map.from_list([(1, "one"), (2, "two")]), fn(k, v) => mod(k, 2) == 0)
-## {2: "two"} : Map(Int, String)
+## ➢ Map.keep (fn k v => mod k 2 == 0) (Map.from_list [(1, "one"), (2, "two")])
+## {2: "two"} : Map Int String
 ## ```
-let keep(map : Map(comparable, v), pred : (comparable, v -> Bool)) -> Map(comparable, v) =
-    match map on
-    | Map(tree) => Map(TM.keep(tree, pred))
+let keep (pred : comparable -> v -> Bool) (map : Map comparable v) : Map comparable v =
+    todo "not implemented"
 
 ## Remove key-value pairs that satisfy the given predicate.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Map.reject(Map.from_list([(1, "one"), (2, "two")]), fn(k, v) => mod(k, 2) == 0)
-## {1: "one"} : Map(Int, String)
+## ➢ Map.reject (fn k v => mod k 2 == 0) (Map.from_list [(1, "one"), (2, "two")])
+## {1: "one"} : Map Int String
 ## ```
-let reject(map : Map(comparable, v), pred : (comparable, v -> Bool)) -> Map(comparable, v) =
-    match map on
-    | Map(tree) => Map(TM.reject(tree, pred))
+let reject (pred : comparable -> v -> Bool) (map : Map comparable v) : Map comparable v =
+    todo "not implemented"
 
 ## Create two new maps. The first contains all key-value pairs that passed the
 ## given test, and the second contains all key-value pairs that did not.
@@ -313,11 +290,8 @@ let reject(map : Map(comparable, v), pred : (comparable, v -> Bool)) -> Map(comp
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Map.partition(Map.from_list([(1, "one"), (2, "two")]), fn(k, v) => mod(k, 2) == 0)
-## ({2: "two"}, {1: "one"}) : (Map(Int, String), Map(Int, String))
+## ➢ Map.partition (fn k v => mod k 2 == 0) (Map.from_list [(1, "one"), (2, "two")])
+## ({2: "two"}, {1: "one"}) : (Map Int String, Map Int String)
 ## ```
-let partition(map : Map(comparable, v), pred : (comparable, v -> Bool)) -> (Map(comparable, v), Map(comparable, v)) =
-    match map on
-    | Map(tree) =>
-        let (passed, failed) = TM.partition(tree, pred)
-        (Map(passed), Map(failed))
+let partition (pred : comparable -> v -> Bool) (map : Map comparable v) : (Map comparable v, Map comparable v) =
+    todo "not implemented"

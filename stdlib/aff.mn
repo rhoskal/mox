@@ -19,83 +19,83 @@ module Aff exposing
 ## ➢
 ## :
 ## ```
-type alias Aff(e, a) =
-    AsyncEffect(e, a)
+type alias Aff e a =
+    AsyncEffect e a
 
 ## Lifts an error into a failed `Aff`.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Aff.fail("foobar!") : Aff(String, String)
-## : Aff(String, String)
+## ➢ Aff.fail "foobar!" : Aff String String
+## : Aff String String
 ## ```
-let fail(err : e) -> Aff(e, Unit) =
-    Scheduler.Async.fail(err)
+let fail (err : e) : Aff e Unit =
+    Scheduler.Async.fail err
 
 ## Lifts a value into a successful `Aff`.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Aff.success("foobar") : Aff(String, String)
-## : Aff(String, String)
+## ➢ Aff.success "foobar" : Aff String String
+## : Aff String String
 ## ```
-let succeed(value : a) -> Aff(Unit, a) =
-    Scheduler.Async.succeed(value)
+let succeed (value : a) : Aff Unit a =
+    Scheduler.Async.succeed value
 
-let map(aff_a : Aff(e, a), f : (a -> b)) =
-    match run(aff_a) on
-    | Err(ea) => fail(ea)
-    | Ok(a) => succeed(f(a))
+let map (aff_a : Aff e a) (f : a -> b) : Aff e b =
+    match run aff_a on
+    | Err ea => fail ea
+    | Ok a => succeed (f a)
 
-let map2(
-    aff_a: Aff(e, a),
-    aff_b: Aff(e, b),
-    f: ((a, b) -> c)
-) -> Aff(e, c) =
-    match run(aff_a) on
-    | Err(ea) => fail(ea)
-    | Ok(a) =>
-        match run(aff_b) on
-        | Err(eb) => fail(eb)
-        | Ok(b) => succeed(f(a, b))
+let map2
+    (aff_a : Aff e a)
+    (aff_b : Aff e b)
+    (f : a -> b -> c)
+    : Aff e c =
+    match run aff_a on
+    | Err ea => fail ea
+    | Ok a =>
+        match run aff_b on
+        | Err eb => fail eb
+        | Ok b => succeed (f a b)
 
-let map3(
-    aff_a: Aff(e, a),
-    aff_b: Aff(e, b),
-    aff_c: Aff(e, c),
-    f: ((a, b, c) -> d)
-) -> Aff(e, d) =
-    match run(aff_a) on
-    | Err(ea) => fail(ea)
-    | Ok(a) =>
-        match run(aff_b) on
-        | Err(eb) => fail(eb)
-        | Ok(b) =>
-            match run(aff_c) on
-            | Err(ec) => fail(ec)
-            | Ok(c) => succeed(f(a, b, c))
+let map3
+    (aff_a : Aff e a)
+    (aff_b : Aff e b)
+    (aff_c : Aff e c)
+    (f : a -> b -> c -> d)
+    : Aff e d =
+    match run aff_a on
+    | Err ea => fail ea
+    | Ok a =>
+        match run aff_b on
+        | Err eb => fail eb
+        | Ok b =>
+            match run aff_c on
+            | Err ec => fail ec
+            | Ok c => succeed (f a b c)
 
-let map4(
-    aff_a: Aff(e, a),
-    aff_b: Aff(e, b),
-    aff_c: Aff(e, c),
-    aff_d: Aff(e, d),
-    f: ((a, b, c, d) -> e)
-) -> Aff(e, e) =
-    match run(aff_a) on
-    | Err(ea) => fail(ea)
-    | Ok(a) =>
-        match run(aff_b) on
-        | Err(eb) => fail(eb)
-        | Ok(b) =>
-            match run(aff_c) on
-            | Err(ec) => fail(ec)
-            | Ok(c) =>
-                match run(aff_d) on
-                | Err(ed) => fail(ed)
-                | Ok(d) => succeed(f(a, b, c, d))
+let map4
+    (aff_a : Aff e a)
+    (aff_b : Aff e b)
+    (aff_c : Aff e c)
+    (aff_d : Aff e d)
+    (f : a -> b -> c -> d -> value)
+    : Aff e value =
+    match run aff_a on
+    | Err ea => fail ea
+    | Ok a =>
+        match run aff_b on
+        | Err eb => fail eb
+        | Ok b =>
+            match run aff_c on
+            | Err ec => fail ec
+            | Ok c =>
+                match run aff_d on
+                | Err ed => fail ed
+                | Ok d => succeed (f a b c d)
 
 ## Equivalent of `>>=` from the `Monad` typeclass.
 ##
@@ -105,13 +105,13 @@ let map4(
 ## ➢ Aff.and_then ...
 ## ...
 ## ```
-let and_then(aff: Aff(e, a), f: (a) -> Aff(e, b)) -> Aff(e, b) =
-    todo("not implemented")
+let and_then (aff : Aff e a) (f : a -> Aff e b) : Aff e b =
+    todo "not implemented"
 
-let run(aff: Aff(e, a)) -> Result(e, a) =
-    todo("not implemented")
+let run (aff : Aff e a) : Result e a =
+    todo "not implemented"
 
-let from_result(result: Result(e, a)) -> Aff(e, a) =
+let from_result (result : Result e a) : Aff e a =
     match result on
-    | Err(e) => fail(e)
-    | Ok(a) => succeed(a)
+    | Err e => fail e
+    | Ok a => succeed a

@@ -29,7 +29,7 @@ pub const KeywordKind = enum {
 
 pub const OperatorKind = enum {
     // Arithmetic
-    Exp,
+    Exponent,
     FloatAdd,
     FloatDiv,
     FloatMul,
@@ -51,13 +51,27 @@ pub const OperatorKind = enum {
     LogicalAnd,
     LogicalOr,
 
-    // Other
-    Cons,
-    Equal,
-    Expand,
-    ListConcat,
+    // Functions
+    ThinArrow,
+    FatArrow,
+    ComposeLeft,
+    ComposeRight,
+    PipeLeft,
     PipeRight,
-    StrConcat,
+
+    // Lists
+    ListCons,
+    ListConcat,
+
+    // Strings
+    StringConcat,
+
+    // Assignment
+    Equal,
+
+    // Miscellaneous
+    Expand,
+    Pipe,
 };
 
 pub const DelimiterKind = enum {
@@ -86,9 +100,7 @@ pub const IdentifierKind = enum {
 };
 
 pub const SymbolKind = enum {
-    ArrowRight,
-    DoubleArrowRight,
-    Pipe,
+    TypeHole,
     Underscore,
 };
 
@@ -99,7 +111,6 @@ pub const CommentKind = enum {
 
 pub const SpecialKind = enum {
     Eof,
-    Hole,
     Unrecognized,
 };
 
@@ -298,7 +309,7 @@ pub const Lexer = struct {
                 self.advance();
 
                 if (self.peek() == null) {
-                    return Token.init(.{ .special = .Hole }, "?", .{
+                    return Token.init(.{ .symbol = .TypeHole }, "?", .{
                         .filename = self.loc.filename,
                         .src = .{
                             .line = start_line,
@@ -653,7 +664,7 @@ pub const Lexer = struct {
                     if (next == '>') {
                         self.advance();
 
-                        return Token.init(.{ .symbol = .ArrowRight }, "->", .{
+                        return Token.init(.{ .operator = .ThinArrow }, "->", .{
                             .filename = self.loc.filename,
                             .src = .{
                                 .line = start_line,
@@ -702,7 +713,7 @@ pub const Lexer = struct {
                     if (next == '*') {
                         self.advance();
 
-                        return Token.init(.{ .operator = .Exp }, "**", .{
+                        return Token.init(.{ .operator = .Exponent }, "**", .{
                             .filename = self.loc.filename,
                             .src = .{
                                 .line = start_line,
@@ -816,7 +827,39 @@ pub const Lexer = struct {
                     if (next == '>') {
                         self.advance();
 
-                        return Token.init(.{ .operator = .StrConcat }, "<>", .{
+                        return Token.init(.{ .operator = .StringConcat }, "<>", .{
+                            .filename = self.loc.filename,
+                            .src = .{
+                                .line = start_line,
+                                .col = start_col,
+                            },
+                            .span = .{
+                                .start = span_start,
+                                .end = self.loc.span.end,
+                            },
+                        });
+                    }
+
+                    if (next == '|') {
+                        self.advance();
+
+                        return Token.init(.{ .operator = .PipeLeft }, "<|", TokenLoc{
+                            .filename = self.loc.filename,
+                            .src = .{
+                                .line = start_line,
+                                .col = start_col,
+                            },
+                            .span = .{
+                                .start = span_start,
+                                .end = self.loc.span.end,
+                            },
+                        });
+                    }
+
+                    if (next == '<') {
+                        self.advance();
+
+                        return Token.init(.{ .operator = .ComposeLeft }, "<<", TokenLoc{
                             .filename = self.loc.filename,
                             .src = .{
                                 .line = start_line,
@@ -850,6 +893,22 @@ pub const Lexer = struct {
                         self.advance();
 
                         return Token.init(.{ .operator = .GreaterThanEqual }, ">=", .{
+                            .filename = self.loc.filename,
+                            .src = .{
+                                .line = start_line,
+                                .col = start_col,
+                            },
+                            .span = .{
+                                .start = span_start,
+                                .end = self.loc.span.end,
+                            },
+                        });
+                    }
+
+                    if (next == '>') {
+                        self.advance();
+
+                        return Token.init(.{ .operator = .ComposeRight }, ">>", TokenLoc{
                             .filename = self.loc.filename,
                             .src = .{
                                 .line = start_line,
@@ -945,7 +1004,7 @@ pub const Lexer = struct {
                     }
                 }
 
-                return Token.init(.{ .symbol = .Pipe }, "|", .{
+                return Token.init(.{ .operator = .Pipe }, "|", .{
                     .filename = self.loc.filename,
                     .src = .{
                         .line = start_line,
@@ -964,7 +1023,7 @@ pub const Lexer = struct {
                     if (next == ':') {
                         self.advance();
 
-                        return Token.init(.{ .operator = .Cons }, "::", .{
+                        return Token.init(.{ .operator = .ListCons }, "::", .{
                             .filename = self.loc.filename,
                             .src = .{
                                 .line = start_line,
@@ -1079,7 +1138,7 @@ pub const Lexer = struct {
                     if (next == '>') {
                         self.advance();
 
-                        return Token.init(.{ .symbol = .DoubleArrowRight }, "=>", .{
+                        return Token.init(.{ .operator = .FatArrow }, "=>", .{
                             .filename = self.loc.filename,
                             .src = .{
                                 .line = start_line,
@@ -2067,24 +2126,8 @@ test "[symbol]" {
     // Setup
     const cases = [_]TestCase{
         .{
-            .source = "->",
-            .token = Token.init(.{ .symbol = .ArrowRight }, "->", .{
-                .filename = TEST_FILE,
-                .src = .{ .line = 1, .col = 1 },
-                .span = .{ .start = 0, .end = 2 },
-            }),
-        },
-        .{
-            .source = "=>",
-            .token = Token.init(.{ .symbol = .DoubleArrowRight }, "=>", .{
-                .filename = TEST_FILE,
-                .src = .{ .line = 1, .col = 1 },
-                .span = .{ .start = 0, .end = 2 },
-            }),
-        },
-        .{
-            .source = "|",
-            .token = Token.init(.{ .symbol = .Pipe }, "|", .{
+            .source = "?",
+            .token = Token.init(.{ .symbol = .TypeHole }, "?", .{
                 .filename = TEST_FILE,
                 .src = .{ .line = 1, .col = 1 },
                 .span = .{ .start = 0, .end = 1 },
@@ -2131,7 +2174,7 @@ test "[operator]" {
         // Arithmetic
         .{
             .source = "**",
-            .token = Token.init(.{ .operator = .Exp }, "**", .{
+            .token = Token.init(.{ .operator = .Exponent }, "**", .{
                 .filename = TEST_FILE,
                 .src = .{ .line = 1, .col = 1 },
                 .span = .{ .start = 0, .end = 2 },
@@ -2267,7 +2310,64 @@ test "[operator]" {
                 .span = .{ .start = 0, .end = 2 },
             }),
         },
-        // Other
+        // Functions
+        .{
+            .source = "->",
+            .token = Token.init(.{ .operator = .ThinArrow }, "->", .{
+                .filename = TEST_FILE,
+                .src = .{ .line = 1, .col = 1 },
+                .span = .{ .start = 0, .end = 2 },
+            }),
+        },
+        .{
+            .source = "=>",
+            .token = Token.init(.{ .operator = .FatArrow }, "=>", .{
+                .filename = TEST_FILE,
+                .src = .{ .line = 1, .col = 1 },
+                .span = .{ .start = 0, .end = 2 },
+            }),
+        },
+        .{
+            .source = "<<",
+            .token = Token.init(.{ .operator = .ComposeLeft }, "<<", .{
+                .filename = TEST_FILE,
+                .src = .{ .line = 1, .col = 1 },
+                .span = .{ .start = 0, .end = 2 },
+            }),
+        },
+        .{
+            .source = ">>",
+            .token = Token.init(.{ .operator = .ComposeRight }, ">>", .{
+                .filename = TEST_FILE,
+                .src = .{ .line = 1, .col = 1 },
+                .span = .{ .start = 0, .end = 2 },
+            }),
+        },
+        .{
+            .source = "<|",
+            .token = Token.init(.{ .operator = .PipeLeft }, "<|", .{
+                .filename = TEST_FILE,
+                .src = .{ .line = 1, .col = 1 },
+                .span = .{ .start = 0, .end = 2 },
+            }),
+        },
+        .{
+            .source = "|>",
+            .token = Token.init(.{ .operator = .PipeRight }, "|>", .{
+                .filename = TEST_FILE,
+                .src = .{ .line = 1, .col = 1 },
+                .span = .{ .start = 0, .end = 2 },
+            }),
+        },
+        // Lists
+        .{
+            .source = "::",
+            .token = Token.init(.{ .operator = .ListCons }, "::", .{
+                .filename = TEST_FILE,
+                .src = .{ .line = 1, .col = 1 },
+                .span = .{ .start = 0, .end = 2 },
+            }),
+        },
         .{
             .source = "++",
             .token = Token.init(.{ .operator = .ListConcat }, "++", .{
@@ -2276,6 +2376,26 @@ test "[operator]" {
                 .span = .{ .start = 0, .end = 2 },
             }),
         },
+        // Strings
+        .{
+            .source = "<>",
+            .token = Token.init(.{ .operator = .StringConcat }, "<>", .{
+                .filename = TEST_FILE,
+                .src = .{ .line = 1, .col = 1 },
+                .span = .{ .start = 0, .end = 2 },
+            }),
+        },
+        // Assignment
+        .{
+            .source = "=",
+            .token = Token.init(.{ .operator = .Equal }, "=", .{
+                .filename = TEST_FILE,
+                .src = .{ .line = 1, .col = 1 },
+                .span = .{ .start = 0, .end = 1 },
+            }),
+        },
+
+        // Other
         .{
             .source = "..",
             .token = Token.init(.{ .operator = .Expand }, "..", .{
@@ -2285,35 +2405,11 @@ test "[operator]" {
             }),
         },
         .{
-            .source = "::",
-            .token = Token.init(.{ .operator = .Cons }, "::", .{
-                .filename = TEST_FILE,
-                .src = .{ .line = 1, .col = 1 },
-                .span = .{ .start = 0, .end = 2 },
-            }),
-        },
-        .{
-            .source = "<>",
-            .token = Token.init(.{ .operator = .StrConcat }, "<>", .{
-                .filename = TEST_FILE,
-                .src = .{ .line = 1, .col = 1 },
-                .span = .{ .start = 0, .end = 2 },
-            }),
-        },
-        .{
-            .source = "=",
-            .token = Token.init(.{ .operator = .Equal }, "=", .{
+            .source = "|",
+            .token = Token.init(.{ .operator = .Pipe }, "|", .{
                 .filename = TEST_FILE,
                 .src = .{ .line = 1, .col = 1 },
                 .span = .{ .start = 0, .end = 1 },
-            }),
-        },
-        .{
-            .source = "|>",
-            .token = Token.init(.{ .operator = .PipeRight }, "|>", .{
-                .filename = TEST_FILE,
-                .src = .{ .line = 1, .col = 1 },
-                .span = .{ .start = 0, .end = 2 },
             }),
         },
     };
@@ -2347,8 +2443,8 @@ test "[special]" {
     // Setup
     const cases = [_]TestCase{
         .{
-            .source = "?",
-            .token = Token.init(.{ .special = .Hole }, "?", .{
+            .source = "%",
+            .token = Token.init(.{ .special = .Unrecognized }, "%", .{
                 .filename = TEST_FILE,
                 .src = .{ .line = 1, .col = 1 },
                 .span = .{ .start = 0, .end = 1 },
@@ -3527,7 +3623,7 @@ test "[type variant]" {
             .src = .{ .line = 1, .col = 13 },
             .span = .{ .start = 12, .end = 13 },
         }),
-        Token.init(.{ .symbol = .Pipe }, "|", .{
+        Token.init(.{ .operator = .Pipe }, "|", .{
             .filename = TEST_FILE,
             .src = .{ .line = 1, .col = 15 },
             .span = .{ .start = 14, .end = 15 },
@@ -3537,7 +3633,7 @@ test "[type variant]" {
             .src = .{ .line = 1, .col = 17 },
             .span = .{ .start = 16, .end = 19 },
         }),
-        Token.init(.{ .symbol = .Pipe }, "|", .{
+        Token.init(.{ .operator = .Pipe }, "|", .{
             .filename = TEST_FILE,
             .src = .{ .line = 1, .col = 21 },
             .span = .{ .start = 20, .end = 21 },
@@ -3814,9 +3910,9 @@ test "[module declaration]" {
     }
 }
 
-test "[top level function definition]" {
+test "[top level function declaration]" {
     // Setup
-    const source = "let add(x : Int, y : Int) -> Int = x + y";
+    const source = "let add (x : Int) (y : Int) : Int = x + y";
 
     const expected_tokens = [_]Token{
         Token.init(.{ .keyword = .Let }, "let", .{
@@ -3831,83 +3927,88 @@ test "[top level function definition]" {
         }),
         Token.init(.{ .delimiter = .LeftParen }, "(", .{
             .filename = TEST_FILE,
-            .src = .{ .line = 1, .col = 8 },
-            .span = .{ .start = 7, .end = 8 },
-        }),
-        Token.init(.{ .identifier = .Lower }, "x", .{
-            .filename = TEST_FILE,
             .src = .{ .line = 1, .col = 9 },
             .span = .{ .start = 8, .end = 9 },
         }),
+        Token.init(.{ .identifier = .Lower }, "x", .{
+            .filename = TEST_FILE,
+            .src = .{ .line = 1, .col = 10 },
+            .span = .{ .start = 9, .end = 10 },
+        }),
         Token.init(.{ .delimiter = .Colon }, ":", .{
             .filename = TEST_FILE,
-            .src = .{ .line = 1, .col = 11 },
-            .span = .{ .start = 10, .end = 11 },
+            .src = .{ .line = 1, .col = 12 },
+            .span = .{ .start = 11, .end = 12 },
         }),
         Token.init(.{ .identifier = .Upper }, "Int", .{
             .filename = TEST_FILE,
-            .src = .{ .line = 1, .col = 13 },
-            .span = .{ .start = 12, .end = 15 },
+            .src = .{ .line = 1, .col = 14 },
+            .span = .{ .start = 13, .end = 16 },
         }),
-        Token.init(.{ .delimiter = .Comma }, ",", .{
+        Token.init(.{ .delimiter = .RightParen }, ")", .{
             .filename = TEST_FILE,
-            .src = .{ .line = 1, .col = 16 },
-            .span = .{ .start = 15, .end = 16 },
+            .src = .{ .line = 1, .col = 17 },
+            .span = .{ .start = 16, .end = 17 },
+        }),
+        Token.init(.{ .delimiter = .LeftParen }, "(", .{
+            .filename = TEST_FILE,
+            .src = .{ .line = 1, .col = 19 },
+            .span = .{ .start = 18, .end = 19 },
         }),
         Token.init(.{ .identifier = .Lower }, "y", .{
-            .filename = TEST_FILE,
-            .src = .{ .line = 1, .col = 18 },
-            .span = .{ .start = 17, .end = 18 },
-        }),
-        Token.init(.{ .delimiter = .Colon }, ":", .{
             .filename = TEST_FILE,
             .src = .{ .line = 1, .col = 20 },
             .span = .{ .start = 19, .end = 20 },
         }),
-        Token.init(.{ .identifier = .Upper }, "Int", .{
+        Token.init(.{ .delimiter = .Colon }, ":", .{
             .filename = TEST_FILE,
             .src = .{ .line = 1, .col = 22 },
-            .span = .{ .start = 21, .end = 24 },
+            .span = .{ .start = 21, .end = 22 },
+        }),
+        Token.init(.{ .identifier = .Upper }, "Int", .{
+            .filename = TEST_FILE,
+            .src = .{ .line = 1, .col = 24 },
+            .span = .{ .start = 23, .end = 26 },
         }),
         Token.init(.{ .delimiter = .RightParen }, ")", .{
             .filename = TEST_FILE,
-            .src = .{ .line = 1, .col = 25 },
-            .span = .{ .start = 24, .end = 25 },
-        }),
-        Token.init(.{ .symbol = .ArrowRight }, "->", .{
-            .filename = TEST_FILE,
             .src = .{ .line = 1, .col = 27 },
-            .span = .{ .start = 26, .end = 28 },
+            .span = .{ .start = 26, .end = 27 },
+        }),
+        Token.init(.{ .delimiter = .Colon }, ":", .{
+            .filename = TEST_FILE,
+            .src = .{ .line = 1, .col = 29 },
+            .span = .{ .start = 28, .end = 29 },
         }),
         Token.init(.{ .identifier = .Upper }, "Int", .{
             .filename = TEST_FILE,
-            .src = .{ .line = 1, .col = 30 },
-            .span = .{ .start = 29, .end = 32 },
+            .src = .{ .line = 1, .col = 31 },
+            .span = .{ .start = 30, .end = 33 },
         }),
         Token.init(.{ .operator = .Equal }, "=", .{
             .filename = TEST_FILE,
-            .src = .{ .line = 1, .col = 34 },
-            .span = .{ .start = 33, .end = 34 },
+            .src = .{ .line = 1, .col = 35 },
+            .span = .{ .start = 34, .end = 35 },
         }),
         Token.init(.{ .identifier = .Lower }, "x", .{
             .filename = TEST_FILE,
-            .src = .{ .line = 1, .col = 36 },
-            .span = .{ .start = 35, .end = 36 },
+            .src = .{ .line = 1, .col = 37 },
+            .span = .{ .start = 36, .end = 37 },
         }),
         Token.init(.{ .operator = .IntAdd }, "+", .{
             .filename = TEST_FILE,
-            .src = .{ .line = 1, .col = 38 },
-            .span = .{ .start = 37, .end = 38 },
+            .src = .{ .line = 1, .col = 39 },
+            .span = .{ .start = 38, .end = 39 },
         }),
         Token.init(.{ .identifier = .Lower }, "y", .{
             .filename = TEST_FILE,
-            .src = .{ .line = 1, .col = 40 },
-            .span = .{ .start = 39, .end = 40 },
+            .src = .{ .line = 1, .col = 41 },
+            .span = .{ .start = 40, .end = 41 },
         }),
         Token.init(.{ .special = .Eof }, "", .{
             .filename = TEST_FILE,
-            .src = .{ .line = 1, .col = 41 },
-            .span = .{ .start = 40, .end = 40 },
+            .src = .{ .line = 1, .col = 42 },
+            .span = .{ .start = 41, .end = 41 },
         }),
     };
 
@@ -3952,7 +4053,7 @@ test "[pattern matching]" {
             .src = .{ .line = 1, .col = 9 },
             .span = .{ .start = 8, .end = 10 },
         }),
-        Token.init(.{ .symbol = .Pipe }, "|", .{
+        Token.init(.{ .operator = .Pipe }, "|", .{
             .filename = TEST_FILE,
             .src = .{ .line = 1, .col = 12 },
             .span = .{ .start = 11, .end = 12 },
@@ -3962,7 +4063,7 @@ test "[pattern matching]" {
             .src = .{ .line = 1, .col = 14 },
             .span = .{ .start = 13, .end = 16 },
         }),
-        Token.init(.{ .symbol = .DoubleArrowRight }, "=>", .{
+        Token.init(.{ .operator = .FatArrow }, "=>", .{
             .filename = TEST_FILE,
             .src = .{ .line = 1, .col = 18 },
             .span = .{ .start = 17, .end = 19 },
@@ -3972,7 +4073,7 @@ test "[pattern matching]" {
             .src = .{ .line = 1, .col = 21 },
             .span = .{ .start = 20, .end = 21 },
         }),
-        Token.init(.{ .symbol = .Pipe }, "|", .{
+        Token.init(.{ .operator = .Pipe }, "|", .{
             .filename = TEST_FILE,
             .src = .{ .line = 1, .col = 23 },
             .span = .{ .start = 22, .end = 23 },
@@ -3982,7 +4083,7 @@ test "[pattern matching]" {
             .src = .{ .line = 1, .col = 25 },
             .span = .{ .start = 24, .end = 27 },
         }),
-        Token.init(.{ .symbol = .DoubleArrowRight }, "=>", .{
+        Token.init(.{ .operator = .FatArrow }, "=>", .{
             .filename = TEST_FILE,
             .src = .{ .line = 1, .col = 29 },
             .span = .{ .start = 28, .end = 30 },
@@ -3997,7 +4098,7 @@ test "[pattern matching]" {
             .src = .{ .line = 1, .col = 34 },
             .span = .{ .start = 33, .end = 34 },
         }),
-        Token.init(.{ .symbol = .DoubleArrowRight }, "=>", .{
+        Token.init(.{ .operator = .FatArrow }, "=>", .{
             .filename = TEST_FILE,
             .src = .{ .line = 1, .col = 36 },
             .span = .{ .start = 35, .end = 37 },

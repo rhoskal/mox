@@ -12,10 +12,10 @@ module Tuple exposing
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Tuple.pair(1, "a")
+## ➢ Tuple.pair 1 "a"
 ## (1, "a") : (Int, String)
 ## ```
-let pair(x : a, y : b) -> (a, b) =
+let pair (x : a) (y : b) : (a, b) =
     (x, y)
 
 ## Gets the first value from a tuple.
@@ -23,10 +23,10 @@ let pair(x : a, y : b) -> (a, b) =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Tuple.fst((1, "a"))
+## ➢ Tuple.fst (1, "a")
 ## 1 : Int
 ## ```
-let fst(x : a, _ : b) -> a =
+let fst (x : a) (_ : b) : a =
     x
 
 ## Gets the second value from a tuple.
@@ -34,10 +34,10 @@ let fst(x : a, _ : b) -> a =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Tuple.snd((1, "a"))
+## ➢ Tuple.snd (1, "a")
 ## "a" : String
 ## ```
-let snd(_ : a, y: b) -> b =
+let snd (_ : a) (y : b) : b =
     y
 
 ## Applies functions to both elements of a tuple.
@@ -45,33 +45,33 @@ let snd(_ : a, y: b) -> b =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Tuple.map_both((1, "a"), String.from_int, String.to_upper)
+## ➢ Tuple.map_both String.from_int String.to_upper (1, "a")
 ## ("1", "A") : (String, String)
 ## ```
-let map_both(pair : (a, b), f : (a -> x), g : (b -> y)) -> (x, y) =
+let map_both (f : a -> x) (g : b -> y) (pair : (a, b)) : (x, y) =
     match pair on
-    | (x, y) => (f(x), g(y))
+    | (x, y) => (f x, g y)
 
 ## Applies a function to the first element of a tuple.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Tuple.map_first((1, "a"), String.from_int)
+## ➢ Tuple.map_first String.from_int (1, "a")
 ## ("1", "a") : (String, String)
 ## ```
-let map_first(pair : (a, b), f : (a -> x)) -> (x, b) =
+let map_first (f : a -> x) (pair : (a, b)) : (x, b) =
     match pair on
-    | (x, y) => (f(x), y)
+    | (x, y) => (f x, y)
 
 ## Applies a function to the second element of a tuple.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Tuple.map_second((1, "a"), String.to_upper)
+## ➢ Tuple.map_second String.to_upper (1, "a")
 ## (1, "A") : (Int, String)
 ## ```
-let map_second(pair : (a, b), f : (b -> y)) -> (a, y) =
+let map_second (f : b -> y) (pair : (a, b)) : (a, y) =
     match pair on
-    | (x, y) => (x, f(y))
+    | (x, y) => (x, f y)

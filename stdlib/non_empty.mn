@@ -17,20 +17,20 @@ module NonEmpty exposing
     , to_list
     )
 
-type NonEmpty(a) =
+type NonEmpty a =
     | [a]
-    | a :: List(a)
+    | a :: List a
 
 ## Create a non-empty list containing a single element.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ NonEmpty.singleton(42)
-## [42] : NonEmpty(Int)
+## ➢ NonEmpty.singleton 42
+## [42] : NonEmpty Int
 ## ```
-let singleton(x : a) -> NonEmpty(a) =
-    todo("not implemented")
+let singleton (x : a) : NonEmpty a =
+    todo "not implemented"
 
 ## Get the first element of a non-empty list.
 ## Unlike `List.head`, this always succeeds since the list cannot be empty.
@@ -38,11 +38,11 @@ let singleton(x : a) -> NonEmpty(a) =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ NonEmpty.head([1, 2, 3])
+## ➢ NonEmpty.head [1, 2, 3]
 ## 1 : Int
 ## ```
-let head(list : NonEmpty(a)) -> a =
-    todo("not implemented")
+let head (list : NonEmpty a) : a =
+    todo "not implemented"
 
 ## Get all elements except the first one.
 ## Unlike `List.tail`, this always succeeds since the list cannot be empty.
@@ -50,33 +50,33 @@ let head(list : NonEmpty(a)) -> a =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ NonEmpty.tail([1, 2, 3])
-## [2, 3] : List(Int)
+## ➢ NonEmpty.tail [1, 2, 3]
+## [2, 3] : List Int
 ## ```
-let tail(list : NonEmpty(a)) -> List(a) =
-    todo("not implemented")
+let tail (list : NonEmpty a) : List a =
+    todo "not implemented"
 
 ## Apply a function to each element in a non-empty list.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ NonEmpty.map(fn(x) => x * 2, [1, 2, 3])
-## [2, 4, 6] : NonEmpty(Int)
+## ➢ NonEmpty.map (fn x => x * 2) [1, 2, 3]
+## [2, 4, 6] : NonEmpty Int
 ## ```
-let map(f : ((a) -> b), list : NonEmpty(a)) -> NonEmpty(b) =
-    todo("not implemented")
+let map (f : a -> b) (list : NonEmpty a) : NonEmpty b =
+    todo "not implemented"
 
 ## Place a value between all elements of a non-empty list.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ NonEmpty.intersperse(0, [1, 2, 3])
-## [1, 0, 2, 0, 3] : NonEmpty(Int)
+## ➢ NonEmpty.intersperse 0 [1, 2, 3]
+## [1, 0, 2, 0, 3] : NonEmpty Int
 ## ```
-let intersperse(x : a, list : NonEmpty(a)) -> NonEmpty(a) =
-    todo("not implemented")
+let intersperse (x : a) (list : NonEmpty a) : NonEmpty a =
+    todo "not implemented"
 
 ## Get the number of elements in a non-empty list.
 ## The result is always at least 1.
@@ -84,44 +84,44 @@ let intersperse(x : a, list : NonEmpty(a)) -> NonEmpty(a) =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ NonEmpty.size([1, 2, 3])
+## ➢ NonEmpty.size [1, 2, 3]
 ## 3 : Int
 ## ```
-let size(list : NonEmpty(a)) -> Int =
-    todo("not implemented")
+let size (list : NonEmpty a) : Int =
+    todo "not implemented"
 
 ## Sort a non-empty list in ascending order.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ NonEmpty.sort([3, 1, 2])
-## [1, 2, 3] : NonEmpty(Int)
+## ➢ NonEmpty.sort [3, 1, 2]
+## [1, 2, 3] : NonEmpty Int
 ## ```
-let sort(list : NonEmpty(comparable)) -> NonEmpty(comparable) =
-    todo("not implemented")
+let sort (list : NonEmpty comparable) : NonEmpty comparable =
+    todo "not implemented"
 
 ## Reverse the order of elements in a non-empty list.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ NonEmpty.reverse([1, 2, 3])
-## [3, 2, 1] : NonEmpty(Int)
+## ➢ NonEmpty.reverse [1, 2, 3]
+## [3, 2, 1] : NonEmpty Int
 ## ```
-let reverse(list : NonEmpty(a)) -> NonEmpty(a) =
-    todo("not implemented")
+let reverse (list : NonEmpty a) : NonEmpty a =
+    todo "not implemented"
 
 ## Create a non-empty list with a single value repeated infinitely.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ NonEmpty.repeat(42)
-## [42, 42, 42, ...] : NonEmpty(Int)
+## ➢ NonEmpty.repeat 42
+## [42, 42, 42, ...] : NonEmpty Int
 ## ```
-let repeat(x : a) -> NonEmpty(a) =
-    todo("not implemented")
+let repeat (x : a) : NonEmpty a =
+    todo "not implemented"
 
 ## Take the first n elements from a non-empty list.
 ## If n is 0 or negative, returns an empty list.
@@ -129,11 +129,11 @@ let repeat(x : a) -> NonEmpty(a) =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ NonEmpty.take_left(2, [1, 2, 3, 4])
-## [1, 2] : List(Int)
+## ➢ NonEmpty.take_left 2 [1, 2, 3, 4]
+## [1, 2] : List Int
 ## ```
-let take_left(n : Int, list : NonEmpty(a)) -> List(a) =
-    todo("not implemented")
+let take_left (n : Int) (list : NonEmpty a) : List a =
+    todo "not implemented"
 
 ## Drop the first n elements from a non-empty list.
 ## If n is greater than or equal to the size of the list, returns an empty list.
@@ -141,33 +141,33 @@ let take_left(n : Int, list : NonEmpty(a)) -> List(a) =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ NonEmpty.drop_left(2, [1, 2, 3, 4])
-## [3, 4] : List(Int)
+## ➢ NonEmpty.drop_left 2 [1, 2, 3, 4]
+## [3, 4] : List Int
 ## ```
-let drop_left(n : Int, list : NonEmpty(a)) -> List(a) =
-    todo("not implemented")
+let drop_left (n : Int) (list : NonEmpty a) : List a =
+    todo "not implemented"
 
 ## Keep elements from the start of the list as long as they pass the predicate.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ NonEmpty.take_while(fn(x) => x < 3, [1, 2, 3, 4, 1])
-## [1, 2] : List(Int)
+## ➢ NonEmpty.take_while (fn x => x < 3) [1, 2, 3, 4, 1]
+## [1, 2] : List Int
 ## ```
-let take_while(predicate : ((a) -> Bool), list : NonEmpty(a)) -> List(a) =
-    todo("not implemented")
+let take_while (predicate : a -> Bool) (list : NonEmpty a) : List a =
+    todo "not implemented"
 
 ## Drop elements from the start of the list as long as they pass the predicate.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ NonEmpty.drop_while(fn(x) => x < 3, [1, 2, 3, 4, 1])
-## [3, 4, 1] : List(Int)
+## ➢ NonEmpty.drop_while (fn x => x < 3) [1, 2, 3, 4, 1]
+## [3, 4, 1] : List Int
 ## ```
-let drop_while(predicate : ((a) -> Bool), list : NonEmpty(a)) -> List(a) =
-    todo("not implemented")
+let drop_while (predicate : a -> Bool) (list : NonEmpty a) : List a =
+    todo "not implemented"
 
 ## Convert a regular list to a non-empty list.
 ## Returns None if the input list is empty.
@@ -175,22 +175,22 @@ let drop_while(predicate : ((a) -> Bool), list : NonEmpty(a)) -> List(a) =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ NonEmpty.from_list([1, 2, 3])
-## Some([1, 2, 3]) : Maybe(NonEmpty(Int))
+## ➢ NonEmpty.from_list [1, 2, 3]
+## Some [1, 2, 3] : Maybe (NonEmpty Int)
 ##
-## ➢ NonEmpty.from_list([])
-## None : Maybe(NonEmpty(Int))
+## ➢ NonEmpty.from_list []
+## None : Maybe (NonEmpty Int)
 ## ```
-let from_list(list : List(a)) -> Maybe(NonEmpty(a)) =
-    todo("not implemented")
+let from_list (list : List a) : Maybe (NonEmpty a) =
+    todo "not implemented"
 
 ## Convert a non-empty list to a regular list.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ NonEmpty.to_list([1, 2, 3])
-## [1, 2, 3] : List(Int)
+## ➢ NonEmpty.to_list [1, 2, 3]
+## [1, 2, 3] : List Int
 ## ```
-let to_list(list : NonEmpty(a)) -> List(a) =
-    todo("not implemented")
+let to_list (list : NonEmpty a) : List a =
+    todo "not implemented"

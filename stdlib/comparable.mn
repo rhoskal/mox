@@ -21,14 +21,14 @@ type Ordering =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Comparable.eq(42, 42)
+## ➢ Comparable.eq 42 42
 ## True : Bool
 ##
-## ➢ Comparable.eq(42, 41)
+## ➢ Comparable.eq 42 41
 ## False : Bool
 ## ```
-let eq(x : comparable, y : comparable) -> Bool =
-    match compare(x, y) on
+let eq (x : comparable) (y : comparable) : Bool =
+    match compare x y on
     | EQ => True
     | _ => False
 
@@ -37,14 +37,14 @@ let eq(x : comparable, y : comparable) -> Bool =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Comparable.neq(42, 41)
+## ➢ Comparable.neq 42 41
 ## True : Bool
 ##
-## ➢ Comparable.neq(42, 42)
+## ➢ Comparable.neq 42 42
 ## False : Bool
 ## ```
-let neq(x : comparable, y : comparable) -> Bool =
-    match compare(x, y) on
+let neq (x : comparable) (y : comparable) : Bool =
+    match compare x y on
     | EQ => False
     | _ => True
 
@@ -53,14 +53,14 @@ let neq(x : comparable, y : comparable) -> Bool =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Comparable.lt(41, 42)
+## ➢ Comparable.lt 41 42
 ## True : Bool
 ##
-## ➢ Comparable.lt(42, 42)
+## ➢ Comparable.lt 42 42
 ## False : Bool
 ## ```
-let lt(x : comparable, y : comparable) -> Bool =
-    match compare(x, y) on
+let lt (x : comparable) (y : comparable) : Bool =
+    match compare x y on
     | LT => True
     | _ => False
 
@@ -69,14 +69,14 @@ let lt(x : comparable, y : comparable) -> Bool =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Comparable.gt(43, 42)
+## ➢ Comparable.gt 43 42
 ## True : Bool
 ##
-## ➢ Comparable.gt(42, 42)
+## ➢ Comparable.gt 42 42
 ## False : Bool
 ## ```
-let gt(x : comparable, y : comparable) -> Bool =
-    match compare(x, y) on
+let gt (x : comparable) (y : comparable) : Bool =
+    match compare x y on
     | GT => True
     | _ => False
 
@@ -85,14 +85,14 @@ let gt(x : comparable, y : comparable) -> Bool =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Comparable.lte(42, 42)
+## ➢ Comparable.lte 42 42
 ## True : Bool
 ##
-## ➢ Comparable.lte(43, 42)
+## ➢ Comparable.lte 43 42
 ## False : Bool
 ## ```
-let lte(x : comparable, y : comparable) -> Bool =
-    match compare(x, y) on
+let lte (x : comparable) (y : comparable) : Bool =
+    match compare x y on
     | LT => True
     | EQ => True
     | _ => False
@@ -102,14 +102,14 @@ let lte(x : comparable, y : comparable) -> Bool =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Comparable.gte(42, 42)
+## ➢ Comparable.gte 42 42
 ## True : Bool
 ##
-## ➢ Comparable.gte(41, 42)
+## ➢ Comparable.gte 41 42
 ## False : Bool
 ## ```
-let gte(x : comparable, y : comparable) -> Bool =
-    match compare(x, y) on
+let gte (x : comparable) (y : comparable) : Bool =
+    match compare x y on
     | GT => True
     | EQ => True
     | _ => False
@@ -119,34 +119,33 @@ let gte(x : comparable, y : comparable) -> Bool =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Comparable.compare(42, 42)
+## ➢ Comparable.compare 42 42
 ## EQ : Ordering
 ##
-## ➢ Comparable.compare(41, 42)
+## ➢ Comparable.compare 41 42
 ## LT : Ordering
 ##
-## ➢ Comparable.compare(43, 42)
+## ➢ Comparable.compare 43 42
 ## GT : Ordering
 ## ```
-let compare(x : comparable, y : comparable) -> Ordering =
+let compare (x : comparable) (y : comparable) : Ordering =
     if x == y then
         EQ
+    else if x < y then
+        LT
     else
-        if x < y then
-            LT
-        else
-            GT
+        GT
 
 ## Returns the minimum of two comparable values.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Comparable.min(42, 41)
+## ➢ Comparable.min 42 41
 ## 41 : Int
 ## ```
-let min(x : comparable, y : comparable) -> comparable =
-    match compare(x, y) on
+let min (x : comparable) (y : comparable) : comparable =
+    match compare x y on
     | LT => x
     | _ => y
 
@@ -155,10 +154,10 @@ let min(x : comparable, y : comparable) -> comparable =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Comparable.max(42, 41)
+## ➢ Comparable.max 42 41
 ## 42 : Int
 ## ```
-let max(x : comparable, y : comparable) -> comparable =
-    match compare(x, y) on
+let max (x : comparable) (y : comparable) : comparable =
+    match compare x y on
     | GT => x
     | _ => y

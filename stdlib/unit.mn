@@ -8,8 +8,8 @@ type Unit =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ ignore(42)
+## ➢ ignore 42
 ## Unit : Unit
 ## ```
-let ignore(_ : a) -> Unit =
+let ignore (_ : a) : Unit =
     Unit

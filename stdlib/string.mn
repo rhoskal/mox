@@ -54,617 +54,589 @@ type Pattern =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.size("foobar")
+## ➢ String.size "foobar"
 ## 6 : Int
 ## ```
-let size(str : String) -> Int =
-    string_size(str)
+let size (str : String) : Int =
+    string_size str
 
-## Append two strings.
+## Append one string to another.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.append("foo", "bar")
+## ➢ String.append "foo" "bar"
 ## "foobar" : String
 ## ```
-let append(str1 : String, str2 : String) -> String =
-    string_append(str1, str2)
+let append (str1 : String) (str2 : String) : String =
+    string_append str1 str2
 
-## Concatenate many strings into one.
+## Concatenate a list of strings into a single string.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.concat(["foo", "bar"])
-## "foobar" : String
+## ➢ String.concat ["foo", "bar", "baz"]
+## "foobarbaz" : String
 ## ```
-let concat(list : List(String)) -> String =
-    string_concat(list)
+let concat (list : List String) : String =
+    string_concat list
 
-## Put many strings together with a given pattern.
+## Join a list of strings with a given pattern.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.join(Pattern("/"), (["foo", "bar", "baz"])
-## "foo/bar/baz" : String
+## ➢ String.join ", " ["apple", "banana", "cherry"]
+## "apple, banana, cherry" : String
 ## ```
-let join(pattern : Pattern, list : List(String)) -> String =
-    todo("not implemented")
+let join (pattern : Pattern) (list : List String) : String =
+    let (Pattern p) = pattern
+    string_join p list
 
-## Take *n* characters from the left side of a string.
+## Take the leftmost `n` characters from a string.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.take_left("foobar", 3)
-## "foo" : String
+## ➢ String.take_left 2 "hello"
+## "he" : String
 ## ```
-let take_left(str : String, n : Int) -> String =
+let take_left (n : Int) (str : String) : String =
     if n < 1 then
         ""
     else
-        slice(str, 0, n)
+        slice 0 n str
 
-## Take *n* characters from the right side of a string.
+## Take the rightmost `n` characters from a string.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.take_right("foobar", 3)
-## "bar" : String
+## ➢ String.take_right 2 "hello"
+## "lo" : String
 ## ```
-let take_right(str : String, n : Int) -> String =
-    let len = size(str)
+let take_right (n : Int) (str : String) : String =
+    let len = size str
     if n <= 0 then
         ""
     else if n >= len then
         str
     else
-        slice(str, len - n, len)
+        slice (len - n) len str
 
-## Take characters from the start of a string as long as they satisfy the predicate.
-## Returns a new string containing only the matching characters from the beginning.
+## Take characters from a string while a predicate is true.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.take_while("foobar", vowel?)
-## : String
+## ➢ String.take_while (fn c => c == 'a') "aaabbc"
+## "aaa" : String
 ## ```
-let take_while(str : String, predicate : (Char -> Bool)) -> String =
-    todo("not implemented")
-let take_while(str : String, predicate : (Char -> Bool)) -> String =
-    let len = size(str)
-    let find_end(i : Int) -> Int =
-        if i >= len then
-            len
-        else
-            match at(str, i) on
+let take_while (predicate : Char -> Bool) (str : String) : String =
+    let len = size str
+    let find_end (i : Int) : Int =
+        match string_at i str on
             | None => i
-            | Some(c) =>
-                if predicate(c) then
-                    find_end(i + 1)
+            | Some c =>
+                if predicate c then
+                    find_end (i + 1)
                 else
                     i
-    slice(str, 0, find_end(0))
+    string_substr 0 (find_end 0) str
 
-## Drop *n* characters from the right side of a string.
+## Drop the leftmost `n` characters from a string.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.drop_left("foobar", 3)
-## "bar" : String
+## ➢ String.drop_left 2 "hello"
+## "llo" : String
 ## ```
-let drop_left(str : String, n : Int) -> String =
-    let len = size(str)
+let drop_left (n : Int) (str : String) : String =
+    let len = size str
     if n <= 0 then
         str
     else if n >= len then
         ""
     else
-        slice(str, n, len)
+        slice n len str
 
-## Drop *n* characters from the right side of a string.
+## Drop the rightmost `n` characters from a string.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.drop_right("foobar", 3)
-## "foo" : String
+## ➢ String.drop_right 2 "hello"
+## "hel" : String
 ## ```
-let drop_right(str : String, n : Int) -> String =
-    let len = size(str)
+let drop_right (n : Int) (str : String) : String =
+    let len = size str
     if n <= 0 then
         str
     else if n >= len then
         ""
     else
-        slice(str, 0, len - n)
+        slice 0 (len - n) str
 
-## Remove characters from the start of a string as long as they satisfy the predicate.
-## Returns a new string excluding all matching characters from the beginning.
+## Drop characters from a string while a predicate is true.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.drop_while("aaabbc", fn(c) => c == 'a')
+## ➢ String.drop_while (fn c => c == 'a') "aaabbc"
 ## "bbc" : String
 ## ```
-let drop_while(str : String, predicate : (Char -> Bool)) -> String =
-    todo("not implemented")
+let drop_while (predicate : Char -> Bool) (str : String) : String =
+    todo "not implemented"
 
-## Determine if a string contains the given pattern.
-## Returns True if the pattern is found anywhere within the string.
+## Check if a string contains a given pattern.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.contains?("hello world", Pattern("world"))
-## True : Bool
-##
-## ➢ String.contains?("hello world", Pattern("moon"))
-## False : Bool
+## ➢ String.contains? "world" "hello world"
+## true : Bool
 ## ```
-let contains?(str : String, pattern : Pattern) -> Bool =
-    todo("not implemented")
+let contains? (pattern : Pattern) (str : String) : Bool =
+    todo "not implemented"
 
 ## Break a string into words, splitting on chunks of whitespace.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.words("hello world")
-## ["hello", "world"] : List(String)
+## ➢ String.words "hello world"
+## ["hello", "world"] : List String
 ##
-## ➢ String.words("  multiple   spaces   ")
-## ["multiple", "spaces"] : List(String)
+## ➢ String.words "  multiple   spaces   "
+## ["multiple", "spaces"] : List String
 ## ```
-let words(str : String) -> List(String) =
-    todo("not implemented")
+let words (str : String) : List String =
+    todo "not implemented"
 
 ## Break a string into lines, splitting on newlines.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.lines("hello\nworld")
-## ["hello", "world"] : List(String)
+## ➢ String.lines "hello\nworld"
+## ["hello", "world"] : List String
 ##
-## ➢ String.lines("multiple\n\nblank\nlines")
-## ["multiple", "", "blank", "lines"] : List(String)
+## ➢ String.lines "multiple\n\nblank\nlines"
+## ["multiple", "", "blank", "lines"] : List String
 ## ```
-let lines(str : String) -> List(String) =
-    todo("not implemented")
+let lines (str : String) : List String =
+    todo "not implemented"
 
 ## Find the first occurrence of a pattern in a string.
-## Returns the index of the first character where the pattern is found, or None if not present.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.index_of("hello world", Pattern("world"))
-## Some(6) : Maybe(Int)
+## ➢ String.index_of (Pattern "world") "hello world"
+## Some 6 : Maybe Int
 ##
-## ➢ String.index_of("hello world", Pattern("moon"))
-## None : Maybe(Int)
+## ➢ String.index_of (Pattern "moon") "hello world"
+## None : Maybe Int
 ## ```
-let index_of(str : String, pattern : Pattern) -> Maybe(Int) =
-    todo("not implemented")
+let index_of (pattern : Pattern) (str : String) : Maybe Int =
+    let (Pattern p) = pattern
+    string_index_of p str
 
 ## Find the last occurrence of a pattern in a string.
-## Returns the index of the first character of the last match, or None if not present.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.last_index_of("hello hello world", Pattern("hello"))
-## Some(6) : Maybe(Int)
+## ➢ String.last_index_of (Pattern "hello") "hello hello world"
+## Some 6 : Maybe Int
 ##
-## ➢ String.last_index_of("hello world", Pattern("moon"))
-## None : Maybe(Int)
+## ➢ String.last_index_of (Pattern "moon") "hello world"
+## None : Maybe Int
 ## ```
-let last_index_of(str : String, pattern : Pattern) -> Maybe(Int) =
-    todo("not implemented")
+let last_index_of (pattern : Pattern) (str : String) : Maybe Int =
+    let (Pattern p) = pattern
+    string_last_index_of p str
 
 ## Split a string using a given pattern.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.split_on("foo,bar", Pattern(","))
-## ["foo", "bar"] : List(String)
+## ➢ String.split_on (Pattern ",") "foo,bar"
+## ["foo", "bar"] : List String
 ## ```
-let split_on(str : String, pattern : Pattern) -> List(String) =
-    todo("not implemented")
+let split_on (pattern : Pattern) (str : String) : List String =
+    let (Pattern p) = pattern
+    string_split p str
 
 ## Split a string using a given pattern.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.split_at("foobar", 3)
+## ➢ String.split_at 3 "foobar"
 ## ("foo", "bar") : (String, String)
 ## ```
-let split_at(str : String, n : Int) -> (String, String) =
-    todo("not implemented")
+let split_at (n : Int) (str : String) : (String, String) =
+    todo "not implemented"
 
 ## Take a substring given a start and end index.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.slice("abcd", 1, 3)
+## ➢ String.slice 1 3 "abcd"
 ## "bc" : String
 ## ```
-let slice(str : String, start : Int, end : Int) -> String =
-    string_slice(str, start, end)
+let slice (start : Int) (end : Int) (str : String) : String =
+    string_slice start end str
 
 ## Convert a string to all lower case.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.to_lower("FOOBAR")
+## ➢ String.to_lower "FOOBAR"
 ## "foobar" : String
 ## ```
-let to_lower(str : String) -> String =
-    string_to_lower(str)
+let to_lower (str : String) : String =
+    string_to_lower str
 
 ## Convert a string to all upper case.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.to_upper("foobar")
+## ➢ String.to_upper "foobar"
 ## "FOOBAR" : String
 ## ```
-let to_upper(str : String) -> String =
-    string_to_upper(str)
+let to_upper (str : String) : String =
+    string_to_upper str
 
 ## Reverse a string.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.reverse("foobar")
+## ➢ String.reverse "foobar"
 ## "raboof" : String
 ## ```
-let reverse(str : String) -> String =
-    string_reverse(str)
+let reverse (str : String) : String =
+    string_reverse str
 
 ## Repeat a string *n* times.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.repeat("ha", 3)
+## ➢ String.repeat 3 "ha"
 ## "hahaha" : String
 ## ```
-let repeat(str : String, count : Int) -> String =
-    todo("not implemented")
+let repeat (n : Int) (str : String) : String =
+    string_repeat n str
 
 ## Test whether a string is empty.
-## Returns True if the string contains no characters.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.empty?("")
+## ➢ String.empty? ""
 ## True : Bool
 ##
-## ➢ String.empty?("hello")
+## ➢ String.empty? "hello"
 ## False : Bool
 ## ```
 let empty?(str : String) -> Bool =
-    todo("not implemented")
+    str == ""
 
-## Returns `True` if string ends with the given pattern.
+## Check if a string starts with a given prefix.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.ends_with?("abc", "c")
+## ➢ String.starts_with? "a" "abc"
 ## True : Bool
 ## ```
-let ends_with?(str : String, pattern : Pattern) =
-    string_ends_with(str, pattern)
+let starts_with? (prefix : String) (str : String) : Bool =
+    string_starts_with prefix str
 
-## Returns `True` if string starts with the given pattern.
+## Check if a string ends with a given suffix.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.starts_with?("abc", "a")
+## ➢ String.ends_with? "c" "abc"
 ## True : Bool
 ## ```
-let starts_with?(str : String, pattern : Pattern) -> Bool
-    string_starts_with(str, pattern)
+let ends_with? (suffix : String) (str : String) : Bool =
+    string_ends_with suffix str
 
 ## Replace all occurrences of some pattern.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.replace "foo-bar-baz" (Pattern "-") (Pattern "_")
+## ➢ String.replace (Pattern "-") (Pattern "_") "foo-bar-baz"
 ## "foo_bar_baz" : String
 ## ```
-let replace(str: String, pattern1 : String, pattern2 : String) -> String =
-    todo("not implemented")
+let replace (old : String) (new : String) (str : String) : String =
+    string_replace old new str
 
 ## Remove whitespace from both sides of a string.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.trim("  foo  ")
+## ➢ String.trim "  foo  "
 ## "foo" : String
 ## ```
-let trim(str : String) -> String =
-    todo("not implemented")
+let trim (str : String) : String =
+    string_trim str
 
 ## Remove whitespace from the left of a string.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.trim_left("  foo")
+## ➢ String.trim_left "  foo"
 ## "foo" : String
 ## ```
-let trim_left(str : String) -> String =
-    todo("not implemented")
+let trim_left (str : String) : String =
+    todo "not implemented"
 
 ## Remove whitespace from the right of a string.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.trim_right("foo  ")
+## ➢ String.trim_right "foo  "
 ## "foo" : String
 ## ```
-let trim_right(str : String) -> String =
-    todo("not implemented")
+let trim_right (str : String) : String =
+    todo "not implemented"
 
 ## Pad a string on both sides until it has a given length.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.pad("foobar", 10, '_')
+## ➢ String.pad 10 '_' "foobar"
 ## "__foobar__" : String
 ## ```
-let pad(str : String, n : Int, char : Char) -> String =
-    todo("not implemented")
+let pad (length : Int) (char : Char) (str : String) : String =
+    todo "not implemented"
 
 ## Pad a string from the left until it has a given length.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.pad_left("foo", 6, Pattern(" "))
+## ➢ String.pad_left 6 (Pattern " ") "foo"
 ## "   foo" : String
 ## ```
-let pad_left(str : String, count : Int, pattern : Pattern) -> String =
-    todo("not implemented")
+let pad_left (length : Int) (char : Char) (str : String) : String =
+    todo "not implemented"
 
 ## Pad a string from the right until it has a given length.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.pad_right("foo", 6, Pattern(" "))
+## ➢ String.pad_right 6 (Pattern " ") "foo"
 ## "foo   " : String
 ## ```
-let pad_right(str : String, count : Int, pattern : Pattern) -> String =
-    todo("not implemented")
+let pad_right (length : Int) (char : Char) (str : String) : String =
+    todo "not implemented"
 
-## Returns `True` if string starts with the given pattern.
+## Find all indexes of a pattern in a string.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.indexes_of("Mississippi", "i")
-## [1, 4, 7, 10] : List(Int)
+## ➢ String.indexes_of "ana" "banana"
+## [1, 3] : List Int
 ## ```
-let indexes_of(str: String, substr : String) -> List(Int) =
-    todo("not implemented")
+let indexes_of (pattern : Pattern) (str : String) : List Int =
+    todo "not implemented"
 
-## Convert a string to an integer.
-## Returns `Some(value)` if the string contains a valid integer, or `None` otherwise.
+## Convert a string to an integer, if possible.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.to_int("42")
-## Some(42) : Maybe(Int)
-##
-## ➢ String.to_int("not_a_number")
-## None : Maybe(Int)
+## ➢ String.to_int "42"
+## Some 42 : Maybe Int
 ## ```
-let to_int(str : String) -> Maybe(Int) =
-    todo("not implemented")
+let to_int (str : String) : Maybe Int =
+    todo "not implemented"
 
-## Convert a string to a floating-point number.
-## Returns `Some(value)` if the string contains a valid number, or `None` otherwise.
+## Convert a string to a floating-point number, if possible.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.to_float("3.14")
-## Some(3.14) : Maybe(Float)
-##
-## ➢ String.to_float("invalid")
-## None : Maybe(Float)
+## ➢ String.to_float "3.14"
+## Some 3.14 : Maybe Float
 ## ```
-let to_float(str : String) -> Maybe(Float) =
-    todo("not implemented")
+let to_float (str : String) : Maybe Float =
+    todo "not implemented"
 
-## Convert a single character to a string.
-## Returns a new string containing only the given character.
+## Convert a character to a string.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.from_char('a')
-## "a" : String
-##
-## ➢ String.from_char('🐱')
-## "🐱" : String
+## ➢ String.from_char 'A'
+## "A" : String
 ## ```
-let from_char(char : Char) -> String =
-    todo("not implemented")
+let from_char (char : Char) : String =
+    todo "not implemented"
 
-## Transform every character in a string using the provided function.
-## Returns a new string with each character replaced by the result of applying the function.
+## Apply a function to each character in a string, producing a new string.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.map("hello", fn(c) => if c == 'e' then 'a' else c)
-## "hallo" : String
+## ➢ String.map Char.to_upper "hello"
+## "HELLO" : String
 ## ```
-let map(str : String, f : (Char -> Char)) -> String =
-    todo("not implemented")
+let map (f : Char -> Char) (str : String) : String =
+    fold_left (fn acc c => acc <> from_char (f c)) "" str
 
 ## Keep only the characters that pass the predicate test.
-## Returns a new string containing just the characters for which the predicate returns `True`.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.keep("hello world", fn(c) => c != ' ')
+## ➢ String.keep (fn c => c != ' ') "hello world"
 ## "helloworld" : String
 ## ```
-let keep(str : String, predicate : (Char -> Bool)) -> String =
-    todo("not implemented")
+let keep (predicate : Char -> Bool) (str : String) : String =
+    fold_left (fn acc c => if predicate c then acc <> from_char c else acc) "" str
 
-## Remove all characters that pass the predicate test.
-## Returns a new string excluding the characters for which the predicate returns `True`.
+## Remove characters that match a predicate.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.reject("hello world", fn(c) => c == 'l')
+## ➢ String.reject (fn c => c == 'l') "hello world"
 ## "heo word" : String
 ## ```
-let reject(str : String, predicate : (Char -> Bool)) -> String =
-    todo("not implemented")
+let reject (predicate : Char -> Bool) (str : String) : String =
+    todo "not implemented"
 
-## Reduce a string from the left, accumulating a value by applying a function to each character.
-## The function takes the accumulated value and current character, returning a new accumulated value.
+## Fold over a string from left to right.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.fold_left("abc", 0, fn(acc, c) => acc + Char.to_code(c))
-## 294 : Int  # Sum of character codes for 'a', 'b', and 'c'
+## ➢ String.fold_left (fn acc c => acc + Char.to_int c) 0 "abc"
+## 294 : Int
 ## ```
-let fold_left(str : String, f : (Char, b -> b), init : b) -> b =
-    todo("not implemented")
+let fold_left (f : a -> Char -> a) (init : a) (str : String) : a =
+    todo "not implemented"
 
-## Reduce a string from the right, accumulating a value by applying a function to each character.
-## The function takes the current character and accumulated value, returning a new accumulated value.
+## Fold over a string from right to left.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.fold_right("abc", "", fn(c, acc) => String.append(acc, String.from_char(c)))
-## "cba" : String  # Characters in reverse order
+## ➢ String.fold_right (fn c acc => from_char c <> acc) "" "abc"
+## "cba" : String
 ## ```
-let fold_right(str : String, f : (Char, b -> b), init : b) -> b =
-    todo("not implemented")
+let fold_right (f : Char -> a -> a) (init : a) (str : String) : a =
+    todo "not implemented"
 
-## Determine whether any character in the string satisfies the predicate.
-## Returns `True` if at least one character passes the test.
+## Check if any character in a string matches a predicate.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.any?("hello", fn(c) => c == 'x')
-## False : Bool
-##
-## ➢ String.any?("hello", fn(c) => c == 'e')
-## True : Bool
+## ➢ String.any? (fn c => c == 'a') "hello"
+## false : Bool
 ## ```
-let any?(str : String, pred : (Char -> Bool)) -> Bool =
-    todo("not implemented")
+let any? (predicate : Char -> Bool) (str : String) : Bool =
+    fold_left (fn acc c => acc || predicate c) False str
 
-## Determine whether all characters in the string satisfy the predicate.
-## Returns `True` only if every character passes the test.
+## Check if all characters in a string match a predicate.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.all?("12345", fn(c) => Char.is_digit(c))
-## True : Bool
-##
-## ➢ String.all?("123a5", fn(c) => Char.is_digit(c))
-## False : Bool
+## ➢ String.all? (fn c => c == 'a') "aaaa"
+## true : Bool
 ## ```
-let all?(str : String, pred : (Char -> Bool)) -> Bool =
-    todo("not implemented")
+let all? (predicate : Char -> Bool) (str : String) : Bool =
+    fold_left (fn acc c => acc && predicate c) True str
 
-## Get character at the given position.
-## Returns `Some(char)` if position is valid, or `None` if out of bounds.
+## Get the character at a given index in a string.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.at("hello", 1)
-## Some('e') : Maybe(Char)
-##
-## ➢ String.at("hello", 10)
-## None : Maybe(Char)
+## ➢ String.at 1 "hello"
+## Some 'e' : Maybe Char
 ## ```
-let at(str : String, position : Int) -> Maybe(Char) =
-    string_at(str, position)
+let at (index : Int) (str : String) : Maybe Char =
+    string_at index str
 
-## Determines if a string exactly matches the given pattern.
-## Returns `True` only for a complete match.
+## Check if a string matches a given pattern.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ String.match?("hello", Pattern("hello"))
-## True : Bool
-##
-## ➢ String.match?("hello world", Pattern("hello"))
-## False : Bool
+## ➢ String.match? "[0-9]+" "123"
+## true : Bool
 ## ```
-let match?(str : String, pattern : Pattern) -> Bool =
-    todo("not implemented")
+let match? (pattern : Pattern) (str : String) : Bool =
+    todo "not implemented"
 
-foreign string_size(_ : String) -> Int =
+foreign string_size : String -> Int =
     "zig_string_size"
 
-foreign string_append(_ : String, _ : String) -> String =
+foreign string_append : String -> String -> String =
     "zig_string_append"
 
-foreign string_concat(_ : List(String)) -> String =
+foreign string_concat : String -> String -> String =
     "zig_string_concat"
 
-foreign string_slice(_ : String, _ : Int, _ : Int) -> String =
-    "zig_string_slice"
+foreign string_join : String -> List String -> String =
+    "zig_string_concat"
 
-foreign string_to_lower(_ : String) -> String =
-    "zig_string_to_lower"
+foreign string_substr : String -> Int -> Int -> String =
+    "zig_string_substr"
 
-foreign string_to_upper(_ : String) -> String =
+foreign string_index_of : String -> String -> Maybe Int =
+    "zig_string_index_of"
+
+foreign string_last_index_of : String -> String -> Maybe Int =
+    "zig_string_last_index_of"
+
+foreign string_split : String -> String -> List String =
+    "zig_string_split"
+
+foreign string_to_upper : String -> String =
     "zig_string_to_upper"
 
-foreign string_at(_ : String, _ : Int) -> Int =
-    "zig_string_at"
+foreign string_to_lower : String -> String =
+    "zig_string_to_lower"
 
-foreign string_empty(_ : String) -> Bool =
-    "zig_string_empty"
-
-foreign string_reverse(_ : String) -> String =
+foreign string_reverse : String -> String =
     "zig_string_reverse"
 
-foreign string_starts_with(_ : String, _ : String) -> Bool =
+foreign string_repeat : Int -> String -> String =
+    "zig_string_repeat"
+
+foreign string_starts_with : String -> String -> Bool =
     "zig_string_starts_with"
 
-foreign string_ends_with(_ : String, _ : String) -> Bool =
+foreign string_ends_with : String -> String -> Bool =
     "zig_string_ends_with"
+
+foreign string_replace : String -> String -> String -> String =
+    "zig_string_replace"
+
+foreign string_trim : String -> String =
+    "zig_string_trim"

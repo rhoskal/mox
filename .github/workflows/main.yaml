@@ -16,6 +16,9 @@ jobs:
   preflight:
     runs-on: ubuntu-latest
 
+    # Skip the entire job for draft PRs
+    if: github.event.pull_request.draft == false
+
     steps:
       - uses: actions/checkout@v4
       - uses: cachix/install-nix-action@v27

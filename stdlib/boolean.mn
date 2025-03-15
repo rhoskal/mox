@@ -5,10 +5,10 @@ module Boolean exposing
     , nor
     , not
     , or
+    , xnor
     , xor
     )
 
-## The `Bool` type represents binary true/false values used for logical operations.
 type Bool =
     | False
     | True
@@ -19,10 +19,10 @@ type Bool =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Boolean.not(True)
+## ➢ Boolean.not True
 ## False : Bool
 ## ```
-let not(x : Bool) -> Bool =
+let not (x : Bool) : Bool =
     match x on
     | False => True
     | True => False
@@ -33,13 +33,13 @@ let not(x : Bool) -> Bool =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Boolean.and(True, False)
+## ➢ Boolean.and True False
 ## False : Bool
 ##
-## ➢ Boolean.and(True, True)
+## ➢ Boolean.and True True
 ## True : Bool
 ## ```
-let and(x : Bool, y : Bool) -> Bool =
+let and (x : Bool) (y : Bool) : Bool =
     match (x, y) on
     | (True, True) => True
     | _ => False
@@ -50,13 +50,13 @@ let and(x : Bool, y : Bool) -> Bool =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Boolean.nand(True, False)
+## ➢ Boolean.nand True False
 ## True : Bool
 ##
-## ➢ Boolean.nand(True, True)
+## ➢ Boolean.nand True True
 ## False : Bool
 ## ```
-let nand(x : Bool, y : Bool) -> Bool =
+let nand (x : Bool) (y : Bool) : Bool =
     match (x, y) on
     | (True, True) => False
     | _ => True
@@ -67,13 +67,13 @@ let nand(x : Bool, y : Bool) -> Bool =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Boolean.or(True, False)
+## ➢ Boolean.or True False
 ## True : Bool
 ##
-## ➢ Boolean.or(False, False)
+## ➢ Boolean.or False False
 ## False : Bool
 ## ```
-let or(x : Bool, y : Bool) -> Bool =
+let or (x : Bool) (y : Bool) : Bool =
     match (x, y) on
     | (False, False) => False
     | _ => True
@@ -84,13 +84,13 @@ let or(x : Bool, y : Bool) -> Bool =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Boolean.nor(False, False)
+## ➢ Boolean.nor False False
 ## True : Bool
 ##
-## ➢ Boolean.nor(True, False)
+## ➢ Boolean.nor True False
 ## False : Bool
 ## ```
-let nor(x : Bool, y : Bool) -> Bool =
+let nor (x : Bool) (y : Bool) : Bool =
     match (x, y) on
     | (False, False) => True
     | _ => False
@@ -101,13 +101,13 @@ let nor(x : Bool, y : Bool) -> Bool =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Boolean.xor(True, False)
+## ➢ Boolean.xor True False
 ## True : Bool
 ##
-## ➢ Boolean.xor(True, True)
+## ➢ Boolean.xor True True
 ## False : Bool
 ## ```
-let xor(x : Bool, y : Bool) -> Bool =
+let xor (x : Bool) (y : Bool) : Bool =
     match (x, y) on
     | (False, False) => False
     | (True, True) => False
@@ -119,13 +119,13 @@ let xor(x : Bool, y : Bool) -> Bool =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Boolean.xnor(True, True)
+## ➢ Boolean.xnor True True
 ## True : Bool
 ##
-## ➢ Boolean.xnor(False, True)
+## ➢ Boolean.xnor False True
 ## False : Bool
 ## ```
-let xnor(x : Bool, y : Bool) -> Bool =
+let xnor (x : Bool) (y : Bool) : Bool =
     match (x, y) on
     | (True, True) => True
     | (False, False) => True

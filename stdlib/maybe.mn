@@ -28,38 +28,38 @@ module Maybe exposing
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Some(42)
-## Some(42) : Maybe(Int)
+## ➢ Some 42
+## Some 42 : Maybe Int
 ## ```
-type Maybe(a) =
+type Maybe a =
     | None
-    | Some(a)
+    | Some a
 
 ## Returns `True` when the `Maybe` value was constructed with `Some`.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Maybe.some?(Some(42))
+## ➢ Maybe.some? (Some 42)
 ## True : Bool
 ## ```
-let some?(ma : Maybe(a)) -> Bool =
+let some? (ma : Maybe a) : Bool =
     match ma on
     | None => False
-    | Some(_) => True
+    | Some _ => True
 
 ## Returns `True` when the `Maybe` value is `None`.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Maybe.none?(Some(42))
+## ➢ Maybe.none? (Some 42)
 ## False : Bool
 ## ```
-let none?(ma : Maybe(a)) -> Bool =
+let none? (ma : Maybe a) : Bool =
     match ma on
     | None => True
-    | Some(_) => False
+    | Some _ => False
 
 ## Unwrap a value while providing a default value.
 ## Useful for pipelines, otherwise use a `match` expr instead.
@@ -68,28 +68,28 @@ let none?(ma : Maybe(a)) -> Bool =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Maybe.with_default(Some(42), 100)
+## ➢ Maybe.with_default 100 (Some 42)
 ## 42 : Int
 ##
-## ➢ Maybe.with_default(None, 100)
+## ➢ Maybe.with_default 100 None
 ## 100 : Int
 ## ```
-let with_default(ma : Maybe(a), default : a) -> a =
+let with_default (default : a) (ma : Maybe a) : a =
     match ma on
     | None => default
-    | Some(a) => a
+    | Some a => a
 
 ## Applies the predicate to a value and lifts the result into a `Maybe`.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Maybe.from_predicate(42, fn(x) => x == 42)
-## Some(42) : Maybe(Int)
+## ➢ Maybe.from_predicate 42 (fn x => x == 42)
+## Some 42 : Maybe Int
 ## ```
-let from_predicate(x : a, predicate : (a -> Bool)) -> Maybe(a) =
-    if predicate(x) then
-        Some(x)
+let from_predicate (x : a) (predicate : a -> Bool) : Maybe a =
+    if predicate x then
+        Some x
     else
         None
 
@@ -98,13 +98,13 @@ let from_predicate(x : a, predicate : (a -> Bool)) -> Maybe(a) =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Maybe.satisfy?(Some(15), fn(x) => x > 10)
+## ➢ Maybe.satisfy? (fn x => x > 10) (Some 15)
 ## True : Bool
 ## ```
-let satisfy?(ma : Maybe(a), predicate : (a -> Bool)) -> Bool =
+let satisfy? (predicate : a -> Bool) (ma : Maybe a) : Bool =
     match ma on
     | None => False
-    | Some(a) => predicate(a)
+    | Some a => predicate a
 
 ## Apply a function to value wrapped by a `Maybe`.
 ## Equivalent of `<$>` from the `Functor` typeclass.
@@ -112,110 +112,106 @@ let satisfy?(ma : Maybe(a), predicate : (a -> Bool)) -> Bool =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Maybe.map(Some(21), fn(x) => x * 2)
-## Some(42) : Maybe(Int)
+## ➢ Maybe.map (fn x => x * 2) (Some 21)
+## Some 42 : Maybe Int
 ## ```
-let map(ma : Maybe(a), f : (a -> value)) -> Maybe(value) =
+let map (f : a -> value) (ma : Maybe a) : Maybe value =
     match ma on
     | None => None
-    | Some(a) => Some(f(a))
+    | Some a => Some (f a)
 
 ## Apply a function if all the arguments are `Some`'s.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Maybe.map2(Some(21), Some(21), fn(x, y) => x + y)
-## Some(42) : Maybe(Int)
+## ➢ Maybe.map2 (fn x y => x + y) (Some 21) (Some 21)
+## Some 42 : Maybe Int
 ## ```
-let map2(
-    ma : Maybe(a),
-    mb : Maybe(b)
-    f : ((a, b) -> value),
-) -> Maybe(value) =
+let map2 (f : a -> b -> value) (ma : Maybe a) (mb : Maybe b) : Maybe value =
     match ma on
     | None => None
-    | Some(a) =>
+    | Some a =>
         match mb on
         | None => None
-        | Some(b) => Some(f(a, b))
+        | Some b => Some (f a b)
 
 ## Apply a function if all the arguments are `Some`'s.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Some(14) |> Maybe.map3(Some(14), Some(14), fn(x, y, z) => x + y + z)
-## Some(42) : Maybe(Int)
+## ➢ Maybe.map3 (fn x y z => x + y + z) (Some 14) (Some 14) (Some 14)
+## Some 42 : Maybe Int
 ## ```
-let map3(
-    ma : Maybe(a),
-    mb : Maybe(b),
-    mc : Maybe(c),
-    f : ((a, b, c) -> value)
-) -> Maybe(value) =
+let map3
+    (f : a -> b -> c -> value)
+    (ma : Maybe a)
+    (mb : Maybe b)
+    (mc : Maybe c)
+    : Maybe value =
     match ma on
     | None => None
-    | Some(a) =>
+    | Some a =>
         match mb on
         | None => None
-        | Some(b) =>
+        | Some b =>
             match mc on
             | None => None
-            | Some(c) => Some(f(a, b, c))
+            | Some c => Some (f a b c)
 
 ## Apply a function if all the arguments are `Some`s.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Some(10) |> Maybe.map4(Some(11), Some(12), Some(13), fn(w, x, y, z) => w + x + y + z)
-## Some(46) : Maybe(Int)
+## ➢ Maybe.map4 (fn w x y z => w + x + y + z) (Some 10) (Some 11) (Some 12) (Some 13)
+## Some 46 : Maybe Int
 ## ```
-let map4(
-    ma : Maybe(a),
-    mb : Maybe(b),
-    mc : Maybe(c),
-    md : Maybe(d),
-    f : ((a, b, c, d) -> value)
-) -> Maybe(value) =
+let map4
+    (f : a -> b -> c -> d -> value)
+    (ma : Maybe a)
+    (mb : Maybe b)
+    (mc : Maybe c)
+    (md : Maybe d)
+    : Maybe value =
     match ma on
     | None => None
-    | Some(a) =>
+    | Some a =>
         match mb on
         | None => None
-        | Some(b) =>
+        | Some b =>
             match mc on
             | None => None
-            | Some(c) =>
+            | Some c =>
                 match md on
                 | None => None
-                | Some(d) => Some(f(a, b, c, d))
+                | Some d => Some (f a b c d)
 
 ## Removes one level of nesting.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Maybe.flatten(Some(Some(42)))
-## Some(42) : Maybe(Int)
+## ➢ Maybe.flatten (Some (Some 42))
+## Some 42 : Maybe Int
 ## ```
-let flatten(mma : Maybe(Maybe(a))) -> Maybe(a) =
+let flatten (mma : Maybe (Maybe a)) : Maybe a =
     match mma on
     | None => None
-    | Some(ma) => ma
+    | Some ma => ma
 
 ## Combines two `Maybe` values into a tuple, if both are `Some`.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Maybe.zip(Some("hello world"), Some(42))
-## Some("hello world", 42) : Maybe(String, Int)
+## ➢ Maybe.zip (Some "hello world") (Some 42)
+## Some ("hello world", 42) : Maybe (String, Int)
 ## ```
-let zip(ma : Maybe(a), mb : Maybe(b)) -> Maybe((a, b)) =
+let zip (ma : Maybe a) (mb : Maybe b) : Maybe (a, b) =
     match (ma, mb) on
-    | (Some(a), Some(b)) => Some((a, b))
+    | (Some a, Some b) => Some (a, b)
     | _ => None
 
 ## Equivalent of `<|>` from the `Alternative` typeclass.
@@ -223,110 +219,110 @@ let zip(ma : Maybe(a), mb : Maybe(b)) -> Maybe((a, b)) =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Maybe.or(None, Some(42))
-## Some(42) : Maybe(Int)
+## ➢ Maybe.or None (Some 42)
+## Some 42 : Maybe Int
 ## ```
-let or(ma : Maybe(a), mb : Maybe(a)) -> Maybe(a) =
+let or (ma : Maybe a) (mb : Maybe a) : Maybe a =
     match ma on
     | None => mb
-    | Some(_) => ma
+    | Some _ => ma
 
 ## Equivalent of `>>=` from the `Monad` typeclass.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Maybe.and_then(Some(21), fn(x) => Some(x * 2))
-## Some(42) : Maybe(Int)
+## ➢ Maybe.and_then (fn x => Some (x * 2)) (Some 21)
+## Some 42 : Maybe Int
 ## ```
-let and_then(ma : Maybe(a), f : (a -> Maybe(value))) -> Maybe(value) =
+let and_then (f : a -> Maybe value) (ma : Maybe a) : Maybe value =
     match ma on
     | None => None
-    | Some(a) => f(a)
+    | Some a => f a
 
 ## Equivalent of `>>=` from the `Monad` typeclass.
 ##
 ## @since 0.1.0
-let and_then2(
-    ma : Maybe(a),
-    mb : Maybe(b),
-    f : ((a, b) -> Maybe(value))
-) -> Maybe(value) =
+let and_then2
+    (f : a -> b -> Maybe value)
+    (ma : Maybe a)
+    (mb : Maybe b)
+    : Maybe value =
     match ma on
     | None => None
-    | Some(a) =>
+    | Some a =>
         match mb on
         | None => None
-        | Some(b) => f(a, b)
+        | Some b => f a b
 
 ## Equivalent of `>>=` from the `Monad` typeclass.
 ##
 ## @since 0.1.0
-let and_then3(
-    ma : Maybe(a),
-    mb : Maybe(b),
-    mc : Maybe(c),
-    f : ((a, b, c) -> Maybe(value))
-) -> Maybe(value) =
+let and_then3
+    (ma : Maybe a)
+    (mb : Maybe b)
+    (mc : Maybe c)
+    (f : a -> b -> c -> Maybe value)
+    : Maybe value =
     match ma on
     | None => None
-    | Some(a) =>
+    | Some a =>
         match mb on
         | None => None
-        | Some(b) =>
+        | Some b =>
             match mc on
             | None => None
-            | Some(c) => f(a, b, c)
+            | Some c => f a b c
 
 ## Equivalent of `>>=` from the `Monad` typeclass.
 ##
 ## @since 0.1.0
-let and_then4(
-    ma : Maybe(a),
-    mb : Maybe(b),
-    mc : Maybe(c),
-    md : Maybe(d),
-    f : ((a, b, c, d) -> Maybe(value))
-) -> Maybe(value) =
+let and_then4
+    (f : a -> b -> c -> d -> Maybe value)
+    (ma : Maybe a)
+    (mb : Maybe b)
+    (mc : Maybe c)
+    (md : Maybe d)
+    : Maybe value =
     match ma on
     | None => None
-    | Some(a) =>
+    | Some a =>
         match mb on
         | None => None
-        | Some(b) =>
+        | Some b =>
             match mc on
             | None => None
-            | Some(c) =>
+            | Some c =>
                 match md on
                 | None => None
-                | Some(d) => f(a, b, c, d)
+                | Some d => f a b c d
 
 ## Try a list of functions against a value. Return the value of the first call that succeeds (returns `Some`).
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Maybe.one_of("42.0", [String.to_int, String.to_float])
-## Some(42.0) : Maybe(Float)
+## ➢ Maybe.one_of "42.0" [String.to_int, String.to_float]
+## Some 42.0 : Maybe Float
 ## ```
-let one_of(default : a, fmbs : List((a -> Maybe(b)))) -> Maybe(b) =
+let one_of (default : a) (fmbs : List (a -> Maybe b)) : Maybe b =
     match fmbs on
     | Nil => None
     | fmb :: rest =>
-        match fmb(default) on
-        | None => one_of(default, rest)
-        | Some(b) => Some(b)
+        match fmb default on
+        | None => one_of default rest
+        | Some b => Some b
 
 ## Removes `None` values from a collection while unwrapping all present values.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Maybe.compact([Some(1), None, Some(2)])
-## [1, 2] : List(Int)
+## ➢ Maybe.compact [Some 1, None, Some 2]
+## [1, 2] : List Int
 ## ```
-let compact(maybes : List(Maybe(a))) -> List(a) =
-    List.collect_map(maybes, identity)
+let compact (maybes : List (Maybe a)) : List a =
+    List.collect_map maybes identity
 
 ## Take two `Maybe` values. If the first one equals `None`, return `None`. Otherwise return the second value.
 ## Allows for chaining `Maybe` computations, with a possible "early return" in case of `None`.
@@ -335,19 +331,19 @@ let compact(maybes : List(Maybe(a))) -> List(a) =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Maybe.next(Some(1), Some(2))
-## Some(2) : Maybe(Int)
+## ➢ Maybe.next (Some 1) (Some 2)
+## Some 2 : Maybe Int
 ##
-## ➢ Maybe.next(None, Some(2))
-## None : Maybe(Int)
+## ➢ Maybe.next None (Some 2)
+## None : Maybe Int
 ##
-## ➢ Maybe.next(Some(1), None)
-## None : Maybe(Int)
+## ➢ Maybe.next (Some 1) None
+## None : Maybe Int
 ## ```
-let next(ma : Maybe(a), mb : Maybe(b)) -> Maybe(b) =
+let next (ma : Maybe a) (mb : Maybe b) : Maybe b =
     match ma on
     | None => None
-    | Some(_) => mb
+    | Some _ => mb
 
 ## Take two `Maybe` values. If the second one equals `None`, return `None`. Otherwise return the first value.
 ## Equivalent of `<*` from the `Applicative` typeclass.
@@ -355,32 +351,32 @@ let next(ma : Maybe(a), mb : Maybe(b)) -> Maybe(b) =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Maybe.prev(Some(1), Some(2))
-## Some(1) : Maybe(Int)
+## ➢ Maybe.prev (Some 1) (Some 2)
+## Some 1 : Maybe Int
 ##
-## ➢ Maybe.prev(None, Some(2))
-## None : Maybe(Int)
+## ➢ Maybe.prev None (Some 2)
+## None : Maybe Int
 ##
-## ➢ Maybe.prev(Some(1), None)
-## None : Maybe(Int)
+## ➢ Maybe.prev (Some 1) None
+## None : Maybe Int
 ## ```
-let prev(ma : Maybe(a), mb : Maybe(b)) -> Maybe(a) =
+let prev (ma : Maybe a) (mb : Maybe b) : Maybe a =
     match mb on
     | None => None
-    | Some(_) => ma
+    | Some _ => ma
 
 ## Converts a `Result` to `Maybe`, dropping the error.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Maybe.from_result(Ok(42))
-## Some(42) : Maybe(Int)
+## ➢ Maybe.from_result (Ok 42)
+## Some 42 : Maybe Int
 ##
-## ➢ Maybe.from_result(Err("uh oh!"))
-## None : Maybe(Int)
+## ➢ Maybe.from_result (Err "uh oh!")
+## None : Maybe Int
 ## ```
-let from_result(result : Result(e, a)) -> Maybe(a) =
+let from_result (result : Result e a) : Maybe a =
     match result on
-    | Err(_) => None
-    | Ok(a) => Some(a)
+    | Err _ => None
+    | Ok a => Some a

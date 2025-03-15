@@ -52,10 +52,10 @@ type alias Degrees =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.abs(-42.0)
+## ➢ Float.abs -42.0
 ## 42.0 : Float
 ## ```
-let abs(x : Float) -> Float =
+let abs (x : Float) : Float =
     if x < 0 then
         -x
     else
@@ -66,49 +66,48 @@ let abs(x : Float) -> Float =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.pow(9.0, 3.0)
+## ➢ Float.pow 9.0 3.0
 ## 729.0 : Float
 ## ```
-let pow(x : Float, y : Float) -> Float =
-    float_pow(x, y)
+let pow (x : Float) (y : Float) : Float =
+    float_pow x y
 
 ## Integer remainder.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.mod(42, 8)
+## ➢ Float.mod 42 8
 ## 2 : Int
 ## ```
-let mod(x : Float, y : Float) -> Float =
-    float_mod(x, y)
+let mod (x : Float) (y : Float) : Float =
+    float_mod x y
 
 ## Clamps a number within a given range.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.clamp(100.0, 200.0, 99.0)
+## ➢ Float.clamp 100.0 200.0 99.0
 ## 100.0 : Float
 ## ```
-let clamp(low : Float, high : Float, n : Float) -> Float =
+let clamp (low : Float) (high : Float) (n : Float) : Float =
     if n < low then
         low
+    else if n > high then
+        high
     else
-        if n > high then
-            high
-        else
-            n
+        n
 
 ## Negate a number.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.negate(42.0)
+## ➢ Float.negate 42.0
 ## -42.0 : Float
 ## ```
-let negate(x : Float) -> Float =
+let negate (x : Float) : Float =
     -x
 
 ## Calculate the square root of a number.
@@ -116,22 +115,22 @@ let negate(x : Float) -> Float =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.sqrt(16.0)
+## ➢ Float.sqrt 16.0
 ## 4.0 : Float
 ## ```
-let sqrt(x : Float) -> Float =
-    float_sqrt(x)
+let sqrt (x : Float) : Float =
+    float_sqrt x
 
 ## Calculate the logarithm of a number with a given base.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.log(2.0, 256.0)
+## ➢ Float.log 2.0 256.0
 ## 8.0 : Float
 ## ```
-let log(x : Float, y : Float) -> Float =
-    float_log(x, y)
+let log (x : Float) (y : Float) : Float =
+    float_log x y
 
 ## Calculate the base-2 logarithm of a number.
 ## Undefined for inputs <= 0.
@@ -139,11 +138,11 @@ let log(x : Float, y : Float) -> Float =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.log2(8.0)
+## ➢ Float.log2 8.0
 ## 3.0 : Float
 ## ```
-let log2(x : Float) -> Float =
-    float_log(2, x)
+let log2 (x : Float) : Float =
+    float_log 2 x
 
 ## Calculate the base-10 logarithm of a number.
 ## Undefined for inputs <= 0.
@@ -151,33 +150,33 @@ let log2(x : Float) -> Float =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.log10(1000.0)
+## ➢ Float.log10 1000.0
 ## 3.0 : Float
 ## ```
-let log10(x : Float) -> Float =
-    float_log(10, x)
+let log10 (x : Float) : Float =
+    float_log 10 x
 
 ## An approximation of *e*.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.e()
+## ➢ Float.e
 ## 3.141592653589793 : Float
 ## ```
-let e() -> Float =
-    float_e()
+let e : Float =
+    float_e
 
 ## An approximation of pie.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.pi()
+## ➢ Float.pi
 ## 3.141592653589793 : Float
 ## ```
-let pi() -> Float =
-    float_pi()
+let pi : Float =
+    float_pi
 
 ## ```
 ## Calculate the cosine of an angle in radians.
@@ -185,22 +184,22 @@ let pi() -> Float =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.cos(Float.pi)
+## ➢ Float.cos Float.pi
 ## -1.0 : Float
 ## ```
-let cos(x : Radians) -> Float =
-    float_cos(x)
+let cos (x : Radians) : Float =
+    float_cos x
 
 ## Calculate the sine of an angle in radians.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.sin(Float.pi / 2)
+## ➢ Float.sin (Float.pi / 2)
 ## 1.0 : Float
 ## ```
-let sin(x : Radians) -> Float =
-    float_sin(x)
+let sin (x : Radians) : Float =
+    float_sin x
 
 ## Calculate the tangent of an angle in radians.
 ## Note: Undefined at odd multiples of π/2.
@@ -208,11 +207,11 @@ let sin(x : Radians) -> Float =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.tan(Float.pi / 4)
+## ➢ Float.tan (Float.pi / 4)
 ## 1.0 : Float
 ## ```
-let tan(x : Radians) -> Float =
-    float_tan(x)
+let tan (x : Radians) : Float =
+    float_tan x
 
 ## Calculate the arc cosine (inverse cosine) of a value.
 ## Returns an angle in radians in the range [0, π].
@@ -221,11 +220,11 @@ let tan(x : Radians) -> Float =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.acos(0.0)
+## ➢ Float.acos 0.0
 ## 1.5707963267948966 : Radians  # π/2
 ## ```
-let acos(x : Float) -> Radians =
-    float_acos(x)
+let acos (x : Float) : Radians =
+    float_acos x
 
 ## Calculate the arc sine (inverse sine) of a value.
 ## Returns an angle in radians in the range [-π/2, π/2].
@@ -234,11 +233,11 @@ let acos(x : Float) -> Radians =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.asin(1.0)
+## ➢ Float.asin 1.0
 ## 1.5707963267948966 : Radians  # π/2
 ## ```
-let asin(x : Float) -> Radians =
-    float_asin(x)
+let asin (x : Float) : Radians =
+    float_asin x
 
 ## Calculate the arc tangent (inverse tangent) of a value.
 ## Returns an angle in radians in the range [-π/2, π/2].
@@ -246,11 +245,11 @@ let asin(x : Float) -> Radians =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.atan(1.0)
+## ➢ Float.atan 1.0
 ## 0.7853981633974483 : Radians  # π/4
 ## ```
-let atan(x : Float) -> Radians =
-    float_atan(x)
+let atan (x : Float) : Radians =
+    float_atan x
 
 ## Calculate the angle (in radians) from the positive x-axis to the
 ## point (x, y), handling all quadrants correctly.
@@ -259,21 +258,21 @@ let atan(x : Float) -> Radians =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.atan2(1.0, 1.0)
+## ➢ Float.atan2 1.0 1.0
 ## 0.7853981633974483 : Radians  # π/4
 ## ```
-let atan2(x : Float, y : Float) -> Radians =
-    float_atan2(x, y)
+let atan2 (x : Float) (y : Float) : Radians =
+    float_atan2 x y
 
 ## Converts a degree value into radians.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.radians(Float.pi)
+## ➢ Float.to_radians Float.pi
 ## 3.141592653589793 : Float
 ## ```
-let to_radians(deg : Degrees) -> Radians =
+let to_radians (deg : Degrees) : Radians =
     (deg *. pi) /. 180.0
 
 ## Converts an angle from radians to degrees.
@@ -281,10 +280,10 @@ let to_radians(deg : Degrees) -> Radians =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.degrees(180.0)
+## ➢ Float.to_degrees 180.0
 ## 3.141592653589793 : Float
 ## ```
-let to_degrees(rad : Radians) -> Degrees =
+let to_degrees (rad : Radians) : Degrees =
     (rad *. 180.0) /. pi
 
 ## Truncate a number, rounding towards zero.
@@ -292,69 +291,69 @@ let to_degrees(rad : Radians) -> Degrees =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.trunc(-99.29)
+## ➢ Float.trunc -99.29
 ## -99 : Int
 ## ```
-let trunc(x : Float) -> Int =
-    float_trunc(x)
+let trunc (x : Float) : Int =
+    float_trunc x
 
 ## Rounds a number up to the nearest integer.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.ceil(1.4)
+## ➢ Float.ceil 1.4
 ## 2 : Int
 ## ```
-let ceil(x : Float) -> Int =
-    float_ceil(x)
+let ceil (x : Float) : Int =
+    float_ceil x
 
 ## Rounds a number down to the nearest integer.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.floor(1.2)
+## ➢ Float.floor 1.2
 ## 1 : Int
 ## ```
-let floor(x : Float) -> Int =
-    float_floor(x)
+let floor (x : Float) : Int =
+    float_floor x
 
 ## Round a number to the nearest integer.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.round(1.2)
+## ➢ Float.round 1.2
 ## 1 : Int
 ##
-## ➢ Float.round(1.5)
+## ➢ Float.round 1.5
 ## 2 : Int
 ## ```
-let round(x : Float) -> Int =
-    float_round(x)
+let round (x : Float) : Int =
+    float_round x
 
 ## Calculate the hyperbolic cosine of an angle in radians.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.cosh(1.0)
+## ➢ Float.cosh 1.0
 ## 1.5430806348152437 : Float
 ## ```
-let cosh(x : Radians) -> Float =
-    float_cosh(x)
+let cosh (x : Radians) : Float =
+    float_cosh x
 
 ## Calculate the hyperbolic sine of an angle in radians.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.sinh(1.0)
+## ➢ Float.sinh 1.0
 ## 1.1752011936438014 : Float
 ## ```
-let sinh(x : Radians) -> Float =
-    float_sinh(x)
+let sinh (x : Radians) : Float =
+    float_sinh x
 
 ## Calculate the hyperbolic tangent of an angle in radians.
 ## Returns values in the range [-1, 1].
@@ -362,11 +361,11 @@ let sinh(x : Radians) -> Float =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.tanh(1.0)
+## ➢ Float.tanh 1.0
 ## 0.7615941559557649 : Float
 ## ```
-let tanh(x : Radians) -> Float =
-    float_tanh(x)
+let tanh (x : Radians) : Float =
+    float_tanh x
 
 ## Calculate the hyperbolic cotangent of an angle in radians.
 ## Undefined at x = 0.
@@ -374,22 +373,22 @@ let tanh(x : Radians) -> Float =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.coth(1.0)
+## ➢ Float.coth 1.0
 ## 1.3130352854993315 : Float
 ## ```
-let coth(x : Radians) -> Float =
-    float_coth(x)
+let coth (x : Radians) : Float =
+    float_coth x
 
 ## Calculate the hyperbolic secant of an angle in radians.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.sech(1.0)
+## ➢ Float.sech 1.0
 ## 0.6480542736638854 : Float
 ## ```
-let sech(x : Radians) -> Float =
-    float_sech(x)
+let sech (x : Radians) : Float =
+    float_sech x
 
 ## Calculate the hyperbolic cosecant of an angle in radians.
 ## Undefined at x = 0.
@@ -397,11 +396,11 @@ let sech(x : Radians) -> Float =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.cosech(1.0)
+## ➢ Float.cosech 1.0
 ## 0.8509181282393216 : Float
 ## ```
-let cosech(x : Radians) -> Float =
-    float_cosech(x)
+let cosech (x : Radians) : Float =
+    float_cosech x
 
 ## Calculate the inverse hyperbolic cosine.
 ## Only defined for inputs >= 1.
@@ -409,22 +408,22 @@ let cosech(x : Radians) -> Float =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.acosh(1.0)
+## ➢ Float.acosh 1.0
 ## 0.0 : Float
 ## ```
-let acosh(x : Float) -> Float =
-    float_acosh(x)
+let acosh (x : Float) : Float =
+    float_acosh x
 
 ## Calculate the inverse hyperbolic sine.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.asinh(1.0)
+## ➢ Float.asinh 1.0
 ## 0.8813735870195429 : Float
 ## ```
-let asinh(x : Float) -> Float =
-    float_asinh(x)
+let asinh (x : Float) : Float =
+    float_asinh x
 
 ## Calculate the inverse hyperbolic tangent.
 ## Only defined for inputs in range (-1, 1).
@@ -432,11 +431,11 @@ let asinh(x : Float) -> Float =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.atanh(0.5)
+## ➢ Float.atanh 0.5
 ## 0.5493061443340549 : Float
 ## ```
-let atanh(x : Float) -> Float =
-    float_atanh(x)
+let atanh (x : Float) : Float =
+    float_atanh x
 
 ## Calculate the inverse hyperbolic cotangent.
 ## Undefined for inputs in range [-1, 1].
@@ -444,11 +443,11 @@ let atanh(x : Float) -> Float =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.acoth(2.0)
+## ➢ Float.acoth 2.0
 ## 0.5493061443340549 : Float
 ## ```
-let acoth(x : Float) -> Float =
-    float_acoth(x)
+let acoth (x : Float) : Float =
+    float_acoth x
 
 ## Calculate the inverse hyperbolic secant.
 ## Only defined for inputs in range (0, 1].
@@ -456,11 +455,11 @@ let acoth(x : Float) -> Float =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.asech(0.5)
+## ➢ Float.asech 0.5
 ## 1.3169578969248166 : Float
 ## ```
-let asech(x : Float) -> Float =
-    float_asech(x)
+let asech (x : Float) : Float =
+    float_asech x
 
 ## Calculate the inverse hyperbolic cosecant.
 ## Undefined at x = 0.
@@ -468,137 +467,137 @@ let asech(x : Float) -> Float =
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.acosech(1.0)
+## ➢ Float.acosech 1.0
 ## 0.8813735870195429 : Float
 ## ```
-let acosech(x : Float) -> Float =
-    float_acosech(x)
+let acosech (x : Float) : Float =
+    float_acosech x
 
 ## Return the minimum positive, non-zero representable floating-point value.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.min()
+## ➢ Float.min
 ## 5e-324 : Float
 ## ```
-let min() -> Float =
-    float_min()
+let min : Float =
+    float_min
 
 ## Return the maximum representable finite floating-point value.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.max()
+## ➢ Float.max
 ## 1.7976931348623157e+308 : Float
 ## ```
-let max() -> Float =
-    float_max()
+let max : Float =
+    float_max
 
 ## Convert an integer to a floating-point number.
 ##
 ## @since 0.1.0
 ##
 ## ```
-## ➢ Float.from_int(42)
+## ➢ Float.from_int 42
 ## 42.0 : Float
 ## ```
-let from_int(x : Int) -> Float =
-    float_from_int(x)
+let from_int (x : Int) : Float =
+    float_from_int x
 
-foreign float_pow(_ : Float, _ : Float) -> Float =
+foreign float_pow : Float -> Float -> Float =
     "zig_float_pow"
 
-foreign float_mod(_ : Float, _ : Float) -> Float =
+foreign float_mod : Float -> Float -> Float =
     "zig_float_mod"
 
-foreign float_sqrt(_ : Float) -> Float =
+foreign float_sqrt : Float -> Float =
     "zig_float_sqrt"
 
-foreign float_log(_ : Float, _ : Float) -> Float =
+foreign float_log : Float -> Float -> Float =
     "zig_float_log"
 
-foreign float_e() -> Float =
+foreign float_e : Float =
     "zig_float_e"
 
-foreign float_pi() -> Float =
+foreign float_pi : Float =
     "zig_float_pi"
 
-foreign float_cos(_ : Float) -> Float =
+foreign float_cos : Float -> Float =
     "zig_float_cos"
 
-foreign float_sin(_ : Float) -> Float =
+foreign float_sin : Float -> Float =
     "zig_float_sin"
 
-foreign float_tan(_ : Float) -> Float =
+foreign float_tan : Float -> Float =
     "zig_float_tan"
 
-foreign float_acos(_ : Float) -> Float =
+foreign float_acos : Float -> Float =
     "zig_float_acos"
 
-foreign float_asin(_ : Float) -> Float =
+foreign float_asin : Float -> Float =
     "zig_float_asin"
 
-foreign float_atan(_ : Float) -> Float =
+foreign float_atan : Float -> Float =
     "zig_float_atan"
 
-foreign float_atan2(_ : Float, _ : Float) -> Float =
+foreign float_atan2 : Float -> Float -> Float =
     "zig_float_atan2"
 
-foreign float_trunc(_ : Float) -> Int =
+foreign float_trunc : Float -> Int =
     "zig_float_trunc"
 
-foreign float_ceil(_ : Float) -> Int =
+foreign float_ceil : Float -> Int =
     "zig_float_ceil"
 
-foreign float_floor(_ : Float) -> Int =
+foreign float_floor : Float -> Int =
     "zig_float_floor"
 
-foreign float_round(_ : Float) -> Int =
+foreign float_round : Float -> Int =
     "zig_float_round"
 
-foreign float_cosh(_ : Float) -> Float =
+foreign float_cosh : Float -> Float =
     "zig_float_cosh"
 
-foreign float_sinh(_ : Float) -> Float =
+foreign float_sinh : Float -> Float =
     "zig_float_sinh"
 
-foreign float_tanh(_ : Float) -> Float =
+foreign float_tanh : Float -> Float =
     "zig_float_tanh"
 
-foreign float_coth(_ : Float) -> Float =
+foreign float_coth : Float -> Float =
     "zig_float_coth"
 
-foreign float_sech(_ : Float) -> Float =
+foreign float_sech : Float -> Float =
     "zig_float_sech"
 
-foreign float_cosech(_ : Float) -> Float =
+foreign float_cosech : Float -> Float =
     "zig_float_cosech"
 
-foreign float_acosh(_ : Float) -> Float =
+foreign float_acosh : Float -> Float =
     "zig_float_acosh"
 
-foreign float_asinh(_ : Float) -> Float =
+foreign float_asinh : Float -> Float =
     "zig_float_asinh"
 
-foreign float_atanh(_ : Float) -> Float =
+foreign float_atanh : Float -> Float =
     "zig_float_atanh"
 
-foreign float_acoth(_ : Float) -> Float =
+foreign float_acoth : Float -> Float =
     "zig_float_acoth"
 
-foreign float_asech(_ : Float) -> Float =
+foreign float_asech : Float -> Float =
     "zig_float_asech"
 
-foreign float_acosech(_ : Float) -> Float =
+foreign float_acosech : Float -> Float =
     "zig_float_acosech"
 
-foreign float_min() -> Float =
+foreign float_min -> Float =
     "zig_float_min"
 
-foreign float_max() -> Float =
+foreign float_max -> Float =
     "zig_float_max"
 
-foreign float_from_int(_ : Int) -> Float =
+foreign float_from_int : Int -> Float =
     "zig_float_from_int"
