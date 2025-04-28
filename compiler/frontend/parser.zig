@@ -5717,3 +5717,543 @@ test "[program]" {
         try testing.expect(program.statements.items[1].* == .module_decl);
     }
 }
+
+test "[guard_node]" {
+    // Setup
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer _ = gpa.deinit();
+    const allocator = gpa.allocator();
+
+    {
+        // Simple guard condition
+        const source = "when x > 0";
+        var l = lexer.Lexer.init(source, TEST_FILE);
+        var parser = try Parser.init(allocator, &l);
+        defer parser.deinit();
+
+        // Action
+        const guard = try parser.parseGuard();
+        defer guard.release(allocator);
+
+        // Assertions
+        try testing.expect(guard.condition.* == .comparison_expr);
+        try testing.expectEqual(lexer.TokenKind{ .operator = .GreaterThan }, guard.condition.comparison_expr.operator.kind);
+
+        const left = guard.condition.comparison_expr.left;
+        try testing.expect(left.* == .lower_identifier);
+        try testing.expectEqualStrings("x", left.lower_identifier.identifier);
+
+        const right = guard.condition.comparison_expr.right;
+        try testing.expect(right.* == .int_literal);
+        try testing.expectEqual(@as(i64, 0), right.int_literal.value);
+    }
+
+    {
+        // Function call in guard
+        const source = "when is_valid?(name)";
+        var l = lexer.Lexer.init(source, TEST_FILE);
+        var parser = try Parser.init(allocator, &l);
+        defer parser.deinit();
+
+        // Action
+        const guard = try parser.parseGuard();
+        defer guard.release(allocator);
+
+        // Assertions
+        try testing.expect(guard.condition.* == .function_call);
+        try testing.expectEqualStrings("is_valid?", guard.condition.function_call.function.lower_identifier.identifier);
+
+        try testing.expectEqual(@as(usize, 1), guard.condition.function_call.arguments.items.len);
+        try testing.expectEqualStrings("name", guard.condition.function_call.arguments.items[0].lower_identifier.identifier);
+    }
+}
+
+test "[pattern_nodes]" {
+    // Setup
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer _ = gpa.deinit();
+    const allocator = gpa.allocator();
+
+    {
+        // Literal pattern test
+        const source = "0";
+        var l = lexer.Lexer.init(source, TEST_FILE);
+        var parser = try Parser.init(allocator, &l);
+        defer parser.deinit();
+
+        // Action
+        const pattern = try parser.parsePattern();
+        defer pattern.release(allocator);
+
+        // Assertions
+        try testing.expect(pattern.* == .literal_pattern);
+        try testing.expect(pattern.literal_pattern.value.* == .int_literal);
+        try testing.expectEqual(@as(i64, 0), pattern.literal_pattern.value.int_literal.value);
+    }
+
+    {
+        // Variable pattern test
+        const source = "x";
+        var l = lexer.Lexer.init(source, TEST_FILE);
+        var parser = try Parser.init(allocator, &l);
+        defer parser.deinit();
+
+        // Action
+        const pattern = try parser.parsePattern();
+        defer pattern.release(allocator);
+
+        // Assertions
+        try testing.expect(pattern.* == .variable_pattern);
+        try testing.expectEqualStrings("x", pattern.variable_pattern.name);
+    }
+
+    {
+        // Wildcard pattern test
+        const source = "_";
+        var l = lexer.Lexer.init(source, TEST_FILE);
+        var parser = try Parser.init(allocator, &l);
+        defer parser.deinit();
+
+        // Action
+        const pattern = try parser.parsePattern();
+        defer pattern.release(allocator);
+
+        // Assertions
+        try testing.expect(pattern.* == .wildcard_pattern);
+    }
+
+    {
+        // Cons pattern test
+        const source = "x :: xs";
+        var l = lexer.Lexer.init(source, TEST_FILE);
+        var parser = try Parser.init(allocator, &l);
+        defer parser.deinit();
+
+        // Action
+        const pattern = try parser.parsePattern();
+        defer pattern.release(allocator);
+
+        // Assertions
+        try testing.expect(pattern.* == .cons_pattern);
+
+        // Check head is variable x
+        try testing.expect(pattern.cons_pattern.head.* == .variable_pattern);
+        try testing.expectEqualStrings("x", pattern.cons_pattern.head.variable_pattern.name);
+
+        // Check tail is variable xs
+        try testing.expect(pattern.cons_pattern.tail.* == .variable_pattern);
+        try testing.expectEqualStrings("xs", pattern.cons_pattern.tail.variable_pattern.name);
+    }
+
+    {
+        // List pattern test
+        const source = "[1, x, _]";
+        var l = lexer.Lexer.init(source, TEST_FILE);
+        var parser = try Parser.init(allocator, &l);
+        defer parser.deinit();
+
+        // Action
+        const pattern = try parser.parsePattern();
+        defer pattern.release(allocator);
+
+        // Assertions
+        try testing.expect(pattern.* == .list_pattern);
+        try testing.expectEqual(@as(usize, 3), pattern.list_pattern.elements.items.len);
+
+        // Check first element is literal 1
+        try testing.expect(pattern.list_pattern.elements.items[0].* == .literal_pattern);
+        try testing.expectEqual(@as(i64, 1), pattern.list_pattern.elements.items[0].literal_pattern.value.int_literal.value);
+
+        // Check second element is variable x
+        try testing.expect(pattern.list_pattern.elements.items[1].* == .variable_pattern);
+        try testing.expectEqualStrings("x", pattern.list_pattern.elements.items[1].variable_pattern.name);
+
+        // Check third element is wildcard
+        try testing.expect(pattern.list_pattern.elements.items[2].* == .wildcard_pattern);
+    }
+
+    {
+        // Constructor pattern test
+        const source = "Some(x)";
+        var l = lexer.Lexer.init(source, TEST_FILE);
+        var parser = try Parser.init(allocator, &l);
+        defer parser.deinit();
+
+        // Action
+        const pattern = try parser.parsePattern();
+        defer pattern.release(allocator);
+
+        // Assertions
+        try testing.expect(pattern.* == .constructor_pattern);
+        try testing.expectEqualStrings("Some", pattern.constructor_pattern.name.identifier);
+        try testing.expectEqual(@as(usize, 1), pattern.constructor_pattern.args.items.len);
+
+        // Check argument is variable x
+        try testing.expect(pattern.constructor_pattern.args.items[0].* == .variable_pattern);
+        try testing.expectEqualStrings("x", pattern.constructor_pattern.args.items[0].variable_pattern.name);
+    }
+}
+
+test "[match_expr]" {
+    // Setup
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer _ = gpa.deinit();
+    const allocator = gpa.allocator();
+
+    {
+        // Boolean variant type matching
+        const source = "match x on\n| False => True\n| True => False";
+        var l = lexer.Lexer.init(source, TEST_FILE);
+        var parser = try Parser.init(allocator, &l);
+        defer parser.deinit();
+
+        // Action
+        const node = try parser.parseExpression();
+        defer {
+            node.release(allocator);
+            allocator.destroy(node);
+        }
+
+        // Assertions
+        // Verify the node type is a match expression
+        try testing.expect(node.* == .match_expr);
+
+        const match_expr = node.match_expr;
+
+        // Verify the subject is "x"
+        try testing.expect(match_expr.subject.* == .lower_identifier);
+        try testing.expectEqualStrings("x", match_expr.subject.lower_identifier.identifier);
+
+        // Verify there are exactly two cases
+        try testing.expectEqual(@as(usize, 2), match_expr.cases.items.len);
+
+        // Verify first case (False => True)
+        {
+            const case = match_expr.cases.items[0];
+
+            // Check pattern is a constructor pattern "False"
+            try testing.expect(case.pattern.* == .constructor_pattern);
+            try testing.expectEqualStrings("False", case.pattern.constructor_pattern.name.identifier);
+            try testing.expectEqual(@as(usize, 0), case.pattern.constructor_pattern.args.items.len);
+
+            // Check expression is constructor "True"
+            try testing.expect(case.expression.* == .upper_identifier);
+            try testing.expectEqualStrings("True", case.expression.upper_identifier.identifier);
+
+            // Verify there's no guard
+            try testing.expect(case.guard == null);
+        }
+
+        // Verify second case (True => False)
+        {
+            const case = match_expr.cases.items[1];
+
+            // Check pattern is a constructor pattern "True"
+            try testing.expect(case.pattern.* == .constructor_pattern);
+            try testing.expectEqualStrings("True", case.pattern.constructor_pattern.name.identifier);
+            try testing.expectEqual(@as(usize, 0), case.pattern.constructor_pattern.args.items.len);
+
+            // Check expression is constructor "False"
+            try testing.expect(case.expression.* == .upper_identifier);
+            try testing.expectEqualStrings("False", case.expression.upper_identifier.identifier);
+
+            // Verify there's no guard
+            try testing.expect(case.guard == null);
+        }
+    }
+
+    {
+        // List pattern matching with cons and Nil
+        const source = "match list on | Nil => 0 | x :: xs => 1 + length(xs)";
+        var l = lexer.Lexer.init(source, TEST_FILE);
+        var parser = try Parser.init(allocator, &l);
+        defer parser.deinit();
+
+        // Action
+        const node = try parser.parseExpression();
+        defer {
+            node.release(allocator);
+            allocator.destroy(node);
+        }
+
+        // Assertions
+        // Verify the node type is a match expression
+        try testing.expect(node.* == .match_expr);
+
+        const match_expr = node.match_expr;
+
+        // Verify the subject is "list"
+        try testing.expect(match_expr.subject.* == .lower_identifier);
+        try testing.expectEqualStrings("list", match_expr.subject.lower_identifier.identifier);
+
+        // Verify there are exactly two cases
+        try testing.expectEqual(@as(usize, 2), match_expr.cases.items.len);
+
+        // Verify first case (Nil => 0)
+        {
+            const case = match_expr.cases.items[0];
+
+            // Check pattern is a constructor pattern "Nil"
+            try testing.expect(case.pattern.* == .constructor_pattern);
+            try testing.expectEqualStrings("Nil", case.pattern.constructor_pattern.name.identifier);
+            try testing.expectEqual(@as(usize, 0), case.pattern.constructor_pattern.args.items.len);
+
+            // Check expression is an integer literal 0
+            try testing.expect(case.expression.* == .int_literal);
+            try testing.expectEqual(@as(i64, 0), case.expression.int_literal.value);
+
+            // Verify there's no guard
+            try testing.expect(case.guard == null);
+        }
+
+        // Verify second case (x :: xs => 1 + length(xs))
+        {
+            const case = match_expr.cases.items[1];
+
+            // Check pattern is a cons pattern
+            try testing.expect(case.pattern.* == .cons_pattern);
+
+            // Check head is variable x
+            try testing.expect(case.pattern.cons_pattern.head.* == .variable_pattern);
+            try testing.expectEqualStrings("x", case.pattern.cons_pattern.head.variable_pattern.name);
+
+            // Check tail is variable xs
+            try testing.expect(case.pattern.cons_pattern.tail.* == .variable_pattern);
+            try testing.expectEqualStrings("xs", case.pattern.cons_pattern.tail.variable_pattern.name);
+
+            // Check expression is an arithmetic expression (1 + length(xs))
+            try testing.expect(case.expression.* == .arithmetic_expr);
+
+            // Verify there's no guard
+            try testing.expect(case.guard == null);
+        }
+    }
+
+    {
+        // Match with guard conditions
+        const source = "match n on | x when x > 0 => \"positive\" | x when x < 0 => \"negative\" | _ => \"zero\"";
+        var l = lexer.Lexer.init(source, TEST_FILE);
+        var parser = try Parser.init(allocator, &l);
+        defer parser.deinit();
+
+        // Action
+        const node = try parser.parseExpression();
+        defer {
+            node.release(allocator);
+            allocator.destroy(node);
+        }
+
+        // Assertions
+        // Verify the node type is a match expression
+        try testing.expect(node.* == .match_expr);
+
+        const match_expr = node.match_expr;
+
+        // Verify the subject is "n"
+        try testing.expect(match_expr.subject.* == .lower_identifier);
+        try testing.expectEqualStrings("n", match_expr.subject.lower_identifier.identifier);
+
+        // Verify there are exactly three cases
+        try testing.expectEqual(@as(usize, 3), match_expr.cases.items.len);
+
+        // Verify first case (x when x > 0 => "positive")
+        {
+            const case = match_expr.cases.items[0];
+
+            // Check pattern is a variable pattern "x"
+            try testing.expect(case.pattern.* == .variable_pattern);
+            try testing.expectEqualStrings("x", case.pattern.variable_pattern.name);
+
+            // Check expression is a string literal "positive"
+            try testing.expect(case.expression.* == .str_literal);
+            try testing.expectEqualStrings("positive", case.expression.str_literal.value);
+
+            // Verify there's a guard
+            try testing.expect(case.guard != null);
+
+            // Check guard condition is "x > 0"
+            try testing.expect(case.guard.?.condition.* == .comparison_expr);
+            try testing.expectEqual(lexer.TokenKind{ .operator = .GreaterThan }, case.guard.?.condition.comparison_expr.operator.kind);
+        }
+
+        // Verify second case (x when x < 0 => "negative")
+        {
+            const case = match_expr.cases.items[1];
+
+            // Check pattern is a variable pattern "x"
+            try testing.expect(case.pattern.* == .variable_pattern);
+            try testing.expectEqualStrings("x", case.pattern.variable_pattern.name);
+
+            // Check expression is a string literal "negative"
+            try testing.expect(case.expression.* == .str_literal);
+            try testing.expectEqualStrings("negative", case.expression.str_literal.value);
+
+            // Verify there's a guard
+            try testing.expect(case.guard != null);
+
+            // Check guard condition is "x < 0"
+            try testing.expect(case.guard.?.condition.* == .comparison_expr);
+            try testing.expectEqual(lexer.TokenKind{ .operator = .LessThan }, case.guard.?.condition.comparison_expr.operator.kind);
+        }
+
+        // Verify third case (_ => "zero")
+        {
+            const case = match_expr.cases.items[2];
+
+            // Check pattern is a wildcard
+            try testing.expect(case.pattern.* == .wildcard_pattern);
+
+            // Check expression is a string literal "zero"
+            try testing.expect(case.expression.* == .str_literal);
+            try testing.expectEqualStrings("zero", case.expression.str_literal.value);
+
+            // Verify there's no guard
+            try testing.expect(case.guard == null);
+        }
+    }
+
+    {
+        // Match with constructor patterns
+        const source = "match result on | Ok(value) => value | Err(msg) => default_value";
+        var l = lexer.Lexer.init(source, TEST_FILE);
+        var parser = try Parser.init(allocator, &l);
+        defer parser.deinit();
+
+        // Action
+        const node = try parser.parseExpression();
+        defer {
+            node.release(allocator);
+            allocator.destroy(node);
+        }
+
+        // Assertions
+        // Verify the node type is a match expression
+        try testing.expect(node.* == .match_expr);
+
+        const match_expr = node.match_expr;
+
+        // Verify the subject is "result"
+        try testing.expect(match_expr.subject.* == .lower_identifier);
+        try testing.expectEqualStrings("result", match_expr.subject.lower_identifier.identifier);
+
+        // Verify there are exactly two cases
+        try testing.expectEqual(@as(usize, 2), match_expr.cases.items.len);
+
+        // Verify first case (Ok(value) => value)
+        {
+            const case = match_expr.cases.items[0];
+
+            // Check pattern is a constructor pattern
+            try testing.expect(case.pattern.* == .constructor_pattern);
+            try testing.expectEqualStrings("Ok", case.pattern.constructor_pattern.name.identifier);
+
+            // Check it has one argument
+            try testing.expectEqual(@as(usize, 1), case.pattern.constructor_pattern.args.items.len);
+
+            // Check the argument is a variable pattern "value"
+            try testing.expect(case.pattern.constructor_pattern.args.items[0].* == .variable_pattern);
+            try testing.expectEqualStrings("value", case.pattern.constructor_pattern.args.items[0].variable_pattern.name);
+
+            // Check expression is a variable "value"
+            try testing.expect(case.expression.* == .lower_identifier);
+            try testing.expectEqualStrings("value", case.expression.lower_identifier.identifier);
+
+            // Verify there's no guard
+            try testing.expect(case.guard == null);
+        }
+
+        // Verify second case (Err(msg) => default_value)
+        {
+            const case = match_expr.cases.items[1];
+
+            // Check pattern is a constructor pattern
+            try testing.expect(case.pattern.* == .constructor_pattern);
+            try testing.expectEqualStrings("Err", case.pattern.constructor_pattern.name.identifier);
+
+            // Check it has one argument
+            try testing.expectEqual(@as(usize, 1), case.pattern.constructor_pattern.args.items.len);
+
+            // Check the argument is a variable pattern "msg"
+            try testing.expect(case.pattern.constructor_pattern.args.items[0].* == .variable_pattern);
+            try testing.expectEqualStrings("msg", case.pattern.constructor_pattern.args.items[0].variable_pattern.name);
+
+            // Check expression is a variable "default_value"
+            try testing.expect(case.expression.* == .lower_identifier);
+            try testing.expectEqualStrings("default_value", case.expression.lower_identifier.identifier);
+
+            // Verify there's no guard
+            try testing.expect(case.guard == null);
+        }
+    }
+
+    {
+        // Tuple pattern matching
+        const source = "match (x, y) on\n| (True, True) => True\n| _ => False";
+        var l = lexer.Lexer.init(source, TEST_FILE);
+        var parser = try Parser.init(allocator, &l);
+        defer parser.deinit();
+
+        // Action
+        const node = try parser.parseExpression();
+        defer {
+            node.release(allocator);
+            allocator.destroy(node);
+        }
+
+        // Assertions
+        // Verify the node type is a match expression
+        try testing.expect(node.* == .match_expr);
+
+        const match_expr = node.match_expr;
+
+        // Verify the subject is a tuple (x, y)
+        try testing.expect(match_expr.subject.* == .tuple);
+        try testing.expectEqual(@as(usize, 2), match_expr.subject.tuple.elements.items.len);
+        try testing.expectEqualStrings("x", match_expr.subject.tuple.elements.items[0].lower_identifier.identifier);
+        try testing.expectEqualStrings("y", match_expr.subject.tuple.elements.items[1].lower_identifier.identifier);
+
+        // Verify there are exactly two cases
+        try testing.expectEqual(@as(usize, 2), match_expr.cases.items.len);
+
+        // Verify first case ((True, True) => True)
+        {
+            const case = match_expr.cases.items[0];
+
+            // Check pattern is a tuple pattern
+            try testing.expect(case.pattern.* == .tuple_pattern);
+            try testing.expectEqual(@as(usize, 2), case.pattern.tuple_pattern.elements.items.len);
+
+            // Check first element is constructor True
+            try testing.expect(case.pattern.tuple_pattern.elements.items[0].* == .constructor_pattern);
+            try testing.expectEqualStrings("True", case.pattern.tuple_pattern.elements.items[0].constructor_pattern.name.identifier);
+            try testing.expectEqual(@as(usize, 0), case.pattern.tuple_pattern.elements.items[0].constructor_pattern.args.items.len);
+
+            // Check second element is constructor True
+            try testing.expect(case.pattern.tuple_pattern.elements.items[1].* == .constructor_pattern);
+            try testing.expectEqualStrings("True", case.pattern.tuple_pattern.elements.items[1].constructor_pattern.name.identifier);
+            try testing.expectEqual(@as(usize, 0), case.pattern.tuple_pattern.elements.items[1].constructor_pattern.args.items.len);
+
+            // Check expression is constructor "True"
+            try testing.expect(case.expression.* == .upper_identifier);
+            try testing.expectEqualStrings("True", case.expression.upper_identifier.identifier);
+
+            // Verify there's no guard
+            try testing.expect(case.guard == null);
+        }
+
+        // Verify second case (_ => False)
+        {
+            const case = match_expr.cases.items[1];
+
+            // Check pattern is a wildcard
+            try testing.expect(case.pattern.* == .wildcard_pattern);
+
+            // Check expression is constructor "False"
+            try testing.expect(case.expression.* == .upper_identifier);
+            try testing.expectEqualStrings("False", case.expression.upper_identifier.identifier);
+
+            // Verify there's no guard
+            try testing.expect(case.guard == null);
+        }
+    }
+}
